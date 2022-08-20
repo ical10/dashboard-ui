@@ -1,0 +1,7 @@
+.github
+.next/
+out/
+node_modules/
+.eslintrc.js
+*.tsbuildinfo
+*.json

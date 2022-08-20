@@ -1,3 +1,24 @@
 {
-  "extends": "next/core-web-vitals"
+  "extends": [
+    "next/core-web-vitals",
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "prettier"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "root": true,
+  "rules": {
+    "comma-dangle": ["error", "always-multiline"],
+    "no-useless-escape": ["warn"],
+    "jsx-a11y/click-events-have-key-events": ["warn"],
+    "jsx-a11y/interactive-supports-focus": ["warn"],
+    "jsx-a11y/no-static-element-interactions": ["warn"],
+    "jsx-a11y/no-noninteractive-element-interactions": ["warn"],
+    "jsx-a11y/anchor-is-valid": ["warn"],
+    "react/display-name": ["warn"],
+    "react/no-unescaped-entities": ["warn"],
+    "react/prop-types": ["off"],
+    "@next/next/no-img-element": ["off"],
+    "import/no-unused-modules": [1]
+  }
 }
