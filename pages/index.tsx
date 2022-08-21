@@ -1,6 +1,5 @@
 import type {NextPage} from 'next';
 import Head from 'next/head';
-import Image from 'next/image';
 
 const Home: NextPage = () => {
   return (
@@ -12,7 +11,9 @@ const Home: NextPage = () => {
       </Head>
 
       <main>
-        <h1>Welcome to Polkadot Anti-scam Dashboard!</h1>
+        <div>
+          <h1>Welcome to Polkadot Anti-scam Dashboard!</h1>
+        </div>
       </main>
     </div>
   );
