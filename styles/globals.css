@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /*
   1. Use a more-intuitive box-sizing model.
 */
@@ -59,6 +63,26 @@ h4,
 h5,
 h6 {
   overflow-wrap: break-word;
+}
+
+h1 {
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: 600;
+  font-size: 50px;
+  line-height: 60px;
+
+  color: #000000;
+}
+
+h3 {
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: 500;
+  font-size: 30px;
+  line-height: 36px;
+
+  color: #000000;
 }
 /*
   9. Create a root stacking context
