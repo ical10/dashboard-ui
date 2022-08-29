@@ -2,6 +2,7 @@ import Box from '@mui/material/Box';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import Typography from '@mui/material/Typography';
+import {useTheme} from '@mui/material/styles';
 
 import * as React from 'react';
 
@@ -41,6 +42,8 @@ function a11yProps(index: number) {
 }
 
 export default function BasicTabs() {
+  const theme = useTheme();
+
   const [value, setValue] = React.useState(0);
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -50,27 +53,36 @@ export default function BasicTabs() {
   return (
     <Box sx={{width: '100%'}}>
       <Box sx={{borderBottom: 1, borderColor: 'divider'}}>
-        <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
+        <Tabs
+          sx={{
+            '& .MuiTabs-flexContainer': {
+              justifyContent: 'space-evenly',
+            },
+          }}
+          value={value}
+          onChange={handleChange}
+          aria-label="basic tabs example"
+        >
           <Tab
-            icon={<Home size="16" color="#FF8A65" />}
+            icon={<Home size="16" color={theme.palette.primary.main} />}
             iconPosition="start"
             label="Home"
             {...a11yProps(0)}
           />
           <Tab
-            icon={<Profile size="16" color="#FF8A65" />}
+            icon={<Profile size="16" color={theme.palette.primary.main} />}
             iconPosition="start"
             label="Profile"
             {...a11yProps(1)}
           />
           <Tab
-            icon={<Element3 size="16" color="#FF8A65" />}
+            icon={<Element3 size="16" color={theme.palette.primary.main} />}
             iconPosition="start"
             label="Overview"
             {...a11yProps(2)}
           />
           <Tab
-            icon={<Setting2 size="16" color="#FF8A65" />}
+            icon={<Setting2 size="16" color={theme.palette.primary.main} />}
             iconPosition="start"
             label="Settings"
             {...a11yProps(3)}
