@@ -95,14 +95,16 @@ const Sidebar = () => {
       <div className="mt-auto mb-12">
         <nav id="logout-nav" aria-label="logout-nav">
           <List>
-            <ListItem disablePadding>
-              <ListItemButton>
-                <ListItemIcon>
-                  <SvgIcon component={LogoutIcon} inheritViewBox />
-                </ListItemIcon>
-                <ListItemText primary="Logout" primaryTypographyProps={{color: 'white'}} />
-              </ListItemButton>
-            </ListItem>
+            <Link href="/" passHref>
+              <ListItem disablePadding>
+                <ListItemButton>
+                  <ListItemIcon>
+                    <SvgIcon component={LogoutIcon} inheritViewBox />
+                  </ListItemIcon>
+                  <ListItemText primary="Logout" primaryTypographyProps={{color: 'white'}} />
+                </ListItemButton>
+              </ListItem>
+            </Link>
           </List>
         </nav>
       </div>
