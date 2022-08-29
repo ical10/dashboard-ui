@@ -41,12 +41,7 @@ const ReportForm = () => {
         />
         <p>Domain taken down</p>
         <div className="flex flex-row">
-          <IconButton
-            onClick={handleClickConfirm}
-            color="primary"
-            aria-label="confirm"
-            component="label"
-          >
+          <IconButton onClick={handleClickConfirm} aria-label="confirm">
             <TickSquare size="32" color="#FF8A65" />
           </IconButton>
           <IconButton onClick={handleClickNotConfirmed} aria-label="not-confirmed">
