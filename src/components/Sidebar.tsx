@@ -14,6 +14,7 @@ import ListItemText from '@mui/material/ListItemText';
 import SvgIcon from '@mui/material/SvgIcon';
 
 import Image from 'next/image';
+import Link from 'next/link';
 
 const Sidebar = () => {
   return (
@@ -36,22 +37,26 @@ const Sidebar = () => {
       <div>
         <nav id="main-sidebar" aria-label="main-sidebar">
           <List>
-            <ListItem disablePadding>
-              <ListItemButton>
-                <ListItemIcon>
-                  <SvgIcon component={DashboardIcon} inheritViewBox />
-                </ListItemIcon>
-                <ListItemText primary="Dashboard" primaryTypographyProps={{color: 'white'}} />
-              </ListItemButton>
-            </ListItem>
-            <ListItem disablePadding>
-              <ListItemButton>
-                <ListItemIcon>
-                  <SvgIcon component={ImplementersIcon} inheritViewBox />
-                </ListItemIcon>
-                <ListItemText primary="Implementers" primaryTypographyProps={{color: 'white'}} />
-              </ListItemButton>
-            </ListItem>
+            <Link href="/dashboard" passHref>
+              <ListItem disablePadding button>
+                <ListItemButton>
+                  <ListItemIcon>
+                    <SvgIcon component={DashboardIcon} inheritViewBox />
+                  </ListItemIcon>
+                  <ListItemText primary="Dashboard" primaryTypographyProps={{color: 'white'}} />
+                </ListItemButton>
+              </ListItem>
+            </Link>
+            <Link href="/implementers" passHref>
+              <ListItem disablePadding>
+                <ListItemButton>
+                  <ListItemIcon>
+                    <SvgIcon component={ImplementersIcon} inheritViewBox />
+                  </ListItemIcon>
+                  <ListItemText primary="Implementers" primaryTypographyProps={{color: 'white'}} />
+                </ListItemButton>
+              </ListItem>
+            </Link>
             <ListItem disablePadding>
               <ListItemButton>
                 <ListItemIcon>
@@ -90,14 +95,16 @@ const Sidebar = () => {
       <div className="mt-auto mb-12">
         <nav id="logout-nav" aria-label="logout-nav">
           <List>
-            <ListItem disablePadding>
-              <ListItemButton>
-                <ListItemIcon>
-                  <SvgIcon component={LogoutIcon} inheritViewBox />
-                </ListItemIcon>
-                <ListItemText primary="Logout" primaryTypographyProps={{color: 'white'}} />
-              </ListItemButton>
-            </ListItem>
+            <Link href="/" passHref>
+              <ListItem disablePadding>
+                <ListItemButton>
+                  <ListItemIcon>
+                    <SvgIcon component={LogoutIcon} inheritViewBox />
+                  </ListItemIcon>
+                  <ListItemText primary="Logout" primaryTypographyProps={{color: 'white'}} />
+                </ListItemButton>
+              </ListItem>
+            </Link>
           </List>
         </nav>
       </div>
