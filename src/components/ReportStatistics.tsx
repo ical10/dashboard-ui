@@ -7,6 +7,8 @@ import {useTheme} from '@mui/material/styles';
 import * as React from 'react';
 
 import {Home, Profile, Element3, Setting2} from 'iconsax-react';
+import EntriesBarChart from 'src/components/EntriesBarChart';
+import TakenDownLineChart from 'src/components/TakenDownLineChart';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -96,7 +98,8 @@ export default function BasicTabs() {
         Item Two
       </TabPanel>
       <TabPanel value={value} index={2}>
-        Item Three
+        <EntriesBarChart />
+        <TakenDownLineChart />
       </TabPanel>
       <TabPanel value={value} index={3}>
         Item Four
