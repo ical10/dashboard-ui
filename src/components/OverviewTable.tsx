@@ -177,8 +177,8 @@ const OverviewTable = () => {
   };
 
   return (
-    <TableContainer component={Paper}>
-      <Table sx={{minWidth: 650, width: 'fit-content'}} aria-label="simple table">
+    <TableContainer sx={{width: 'max-content'}} component={Paper}>
+      <Table sx={{minWidth: 650, width: '100%'}} aria-label="simple table">
         <TableHead>
           <TableRow>
             <TableCell align="center">Implementers</TableCell>
