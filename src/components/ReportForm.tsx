@@ -4,11 +4,20 @@ import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
-import Select, {SelectChangeEvent} from '@mui/material/Select';
+import Select from '@mui/material/Select';
 import Switch from '@mui/material/Switch';
 import TextField from '@mui/material/TextField';
 
 import {useState, useEffect} from 'react';
+import {useForm, Controller, SubmitHandler} from 'react-hook-form';
+
+type FormData = {
+  domains: string[];
+  isTakenDowns: boolean[];
+  screenshotUrls: string[];
+  urlscan?: string;
+  implementer: string;
+};
 
 type SubmissionPayload = {
   domain: string;
@@ -19,7 +28,19 @@ type SubmissionPayload = {
 };
 
 const ReportForm = () => {
-  const [rawDomains, setRawDomains] = useState('');
+  const {control, getValues, handleSubmit} = useForm<FormData>({
+    defaultValues: {
+      implementer: '',
+      domains: [],
+      isTakenDowns: [],
+    },
+  });
+
+  const onSubmit: SubmitHandler<FormData> = (data, event) => {
+    event.preventDefault();
+    console.log('the data is: ', {data});
+  };
+
   const [domains, setDomains] = useState<string[] | []>([]);
   const [formatted, setFormatted] = useState<string>('');
 
@@ -30,70 +51,13 @@ const ReportForm = () => {
     }
   }, [domains]);
 
-  const handleChangeDomains = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const temp = event.target.value;
-    setRawDomains(temp);
-    const inputs = temp.split(',').filter(Boolean);
-
-    const cleaned = inputs.map(input =>
-      input.replace(/^\s+|\s+$/gm, '').replace(/^["'](.+(?=["']$))["']$/, '$1'),
-    );
-
-    setDomains(cleaned);
-  };
-
   const [rawScreenshotUrls, setRawScreenshotUrls] = useState('');
   const [urls, setUrls] = useState<string[] | []>([]);
-
-  const handleChangeScreenshotUrls = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const temp = event.target.value;
-    setRawScreenshotUrls(temp);
-
-    const formatted = temp
-      .split(',')
-      .filter(Boolean)
-      .map(element => element.trim());
-    setUrls(formatted);
-  };
 
   const [implementers] = useState<string[] | []>(['Tim Janssen', 'frankywild', 'pastaMan']);
   const [selectedImplementer, setSelectedImplementer] = useState('');
 
-  const handleChangeImplementer = (event: SelectChangeEvent<string>) => {
-    setSelectedImplementer(event.target.value);
-  };
-
   const [submissionPayload, setSubmissionPayload] = useState<SubmissionPayload[] | []>([]);
-
-  const handleTakenDownChecked = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
-    const checked = event.target.checked;
-    if (checked && value.length) {
-      const updatedSubmissions = [...submissionPayload];
-      const submission = updatedSubmissions.find(submission => submission.domain === value);
-      if (submission) {
-        submission.isTakenDown = checked;
-      }
-      setSubmissionPayload(updatedSubmissions);
-    }
-  };
-
-  const [submittable, setSubmittable] = useState(false);
-
-  const isInvalidSubmission = () => {
-    if (
-      domains.length > 0 &&
-      urls.length > 0 &&
-      domains.length === urls.length &&
-      selectedImplementer.length > 0
-    ) {
-      setSubmittable(true);
-      return false;
-    } else {
-      setSubmittable(false);
-      return true;
-    }
-  };
 
   return (
     <Box
@@ -102,50 +66,73 @@ const ReportForm = () => {
         '& .MuiTextField-root': {m: 1},
       }}
       noValidate
+      onSubmit={handleSubmit(onSubmit)}
       autoComplete="off"
     >
       <div className="flex flex-col gap-3">
         <FormControl sx={{m: 1, minWidth: 120}} size="small">
           <InputLabel id="demo-select-small">Implementer</InputLabel>
-          <Select
-            required
-            error={selectedImplementer.length === 0}
-            labelId="demo-select-small"
-            id="demo-select-small"
-            value={selectedImplementer}
-            label="Implementer"
-            onChange={handleChangeImplementer}
-          >
-            <MenuItem value="">
-              <em>None</em>
-            </MenuItem>
-            {implementers.map(implementer => (
-              <MenuItem key={implementer} value={implementer}>
-                {implementer}
-              </MenuItem>
-            ))}
-          </Select>
+          <Controller
+            name="implementer"
+            control={control}
+            render={({field: {value, onChange}}) => (
+              <Select
+                required
+                error={selectedImplementer.length === 0}
+                labelId="demo-select-small"
+                id="demo-select-small"
+                value={value}
+                onChange={onChange}
+                label="Implementer"
+              >
+                {implementers.map(implementer => (
+                  <MenuItem key={implementer} value={implementer}>
+                    {implementer}
+                  </MenuItem>
+                ))}
+              </Select>
+            )}
+          />
         </FormControl>
 
-        <TextField
-          required
-          error={
-            domains.length === 0 ||
-            (domains.length > 0 && urls.length > 0 && domains.length !== urls.length)
-          }
-          id="outlined-required"
-          label="Domain"
-          helperText={
-            domains.length === 0 ||
-            (domains.length > 0 && urls.length > 0 && domains.length !== urls.length)
-              ? 'Submitted urls and domains must have same length and not be empty!'
-              : 'Input domain here'
-          }
-          multiline
-          maxRows={5}
-          value={rawDomains}
-          onChange={handleChangeDomains}
+        <Controller
+          name="domains"
+          control={control}
+          render={({field: {onChange}}) => (
+            <TextField
+              required
+              error={
+                domains.length === 0 ||
+                (domains.length > 0 && urls.length > 0 && domains.length !== urls.length)
+              }
+              id="outlined-required"
+              label="Domain"
+              helperText={
+                domains.length === 0 ||
+                (domains.length > 0 && urls.length > 0 && domains.length !== urls.length)
+                  ? 'Submitted urls and domains must have same length and not be empty!'
+                  : 'Input domain here'
+              }
+              multiline
+              maxRows={5}
+              onChange={event => {
+                const temp = event.target.value;
+                const inputs = temp.split(',').filter(Boolean);
+
+                const cleaned = inputs.map(input =>
+                  input.replace(/^\s+|\s+$/gm, '').replace(/^["'](.+(?=["']$))["']$/, '$1'),
+                );
+
+                onChange(cleaned);
+                setDomains(cleaned);
+
+                const formatted = cleaned.join('\r\n');
+                setFormatted(formatted);
+              }}
+            />
+          )}
         />
+
         <TextField
           label="Formatted domains"
           helperText="Check domain entries here"
@@ -155,37 +142,73 @@ const ReportForm = () => {
           maxRows={5}
         />
 
-        <TextField
-          required
-          error={
-            urls.length === 0 ||
-            (domains.length > 0 && urls.length > 0 && domains.length !== urls.length)
-          }
-          id="outlined-required"
-          label="Screenshot URLs"
-          helperText={
-            urls.length === 0 ||
-            (domains.length > 0 && urls.length > 0 && domains.length !== urls.length)
-              ? 'Submitted urls and domains must have same length and not be empty!'
-              : 'Paste screenshot urls here'
-          }
-          multiline
-          value={rawScreenshotUrls}
-          onChange={handleChangeScreenshotUrls}
+        <Controller
+          name="screenshotUrls"
+          control={control}
+          render={({field: {onChange}}) => (
+            <TextField
+              required
+              error={
+                urls.length === 0 ||
+                (domains.length > 0 && urls.length > 0 && domains.length !== urls.length)
+              }
+              id="outlined-required"
+              label="Screenshot URLs"
+              helperText={
+                urls.length === 0 ||
+                (domains.length > 0 && urls.length > 0 && domains.length !== urls.length)
+                  ? 'Submitted urls and domains must have same length and not be empty!'
+                  : 'Paste screenshot urls here'
+              }
+              multiline
+              value={rawScreenshotUrls}
+              onChange={event => {
+                const temp = event.target.value;
+                setRawScreenshotUrls(temp);
+
+                const formatted = temp
+                  .split(',')
+                  .filter(Boolean)
+                  .map(element => element.trim());
+                onChange(formatted);
+                setUrls(formatted);
+              }}
+            />
+          )}
         />
 
         {domains.map((domain, i) => (
-          <FormControl key={`${domain}-${i}`}>
-            <FormControlLabel
-              label={domain}
-              control={
-                <Switch required color="primary" value={domain} onChange={handleTakenDownChecked} />
-              }
-            />
-          </FormControl>
+          <Controller
+            key={`${domain}-${i}`}
+            name="isTakenDowns"
+            control={control}
+            render={({field: {value, onChange}}) => (
+              <FormControl>
+                <FormControlLabel
+                  label={domain}
+                  control={
+                    <Switch
+                      required
+                      color="primary"
+                      value={value}
+                      onChange={event => {
+                        const {checked} = event.target;
+
+                        //TODO: update when switching between taken down or not
+                        const values = getValues('isTakenDowns');
+                        values = [...values, checked];
+                        console.log({values});
+                        onChange(values);
+                      }}
+                    />
+                  }
+                />
+              </FormControl>
+            )}
+          />
         ))}
 
-        <Button disabled={isInvalidSubmission()} variant="contained" color="primary">
+        <Button variant="contained" color="primary" type="submit">
           Submit
         </Button>
       </div>
