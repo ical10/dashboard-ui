@@ -3,9 +3,12 @@ import dynamic from 'next/dynamic';
 import Head from 'next/head';
 import {useRouter} from 'next/router';
 
-const ExtensionAccounts = dynamic(() => import('../src/components/ExtensionAccounts'), {
-  ssr: false,
-});
+const ExtensionAccounts = dynamic(
+  () => import('src/components/ExtensionAccounts/ExtensionAccounts'),
+  {
+    ssr: false,
+  },
+);
 
 const Home: NextPage = () => {
   //const router = useRouter();

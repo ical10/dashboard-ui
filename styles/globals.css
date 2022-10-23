@@ -87,6 +87,18 @@ h3 {
 
   color: #000000;
 }
+
+/*
+Remove unnecessary on list
+*/
+ul {
+  padding-inline-start: 0;
+  list-style: none;
+}
+li {
+  overflow-wrap: break-word;
+}
+
 /*
   9. Create a root stacking context
 */
