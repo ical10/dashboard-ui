@@ -28,7 +28,7 @@ type SubmissionPayload = {
 };
 
 const ReportForm = () => {
-  const {control, getValues, handleSubmit} = useForm<FormData>({
+  const {control, handleSubmit} = useForm<FormData>({
     defaultValues: {
       implementer: '',
       domains: [],
@@ -37,8 +37,10 @@ const ReportForm = () => {
   });
 
   const onSubmit: SubmitHandler<FormData> = (data, event) => {
-    event.preventDefault();
-    console.log('the data is: ', {data});
+    if (event) {
+      event.preventDefault();
+      console.log('the data is: ', {data});
+    }
   };
 
   const [domains, setDomains] = useState<string[] | []>([]);
@@ -190,15 +192,14 @@ const ReportForm = () => {
                     <Switch
                       required
                       color="primary"
-                      value={value}
+                      value={domain}
                       onChange={event => {
                         const {checked} = event.target;
 
-                        //TODO: update when switching between taken down or not
-                        const values = getValues('isTakenDowns');
-                        values = [...values, checked];
-                        console.log({values});
-                        onChange(values);
+                        const myArray = [...value];
+                        myArray[i] = checked;
+
+                        onChange(myArray);
                       }}
                     />
                   }
