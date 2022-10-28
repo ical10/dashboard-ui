@@ -8,7 +8,7 @@ import Select from '@mui/material/Select';
 import Switch from '@mui/material/Switch';
 import TextField from '@mui/material/TextField';
 
-import {useState, useEffect} from 'react';
+import React, {useState, useEffect} from 'react';
 import {useForm, Controller, SubmitHandler} from 'react-hook-form';
 
 type FormData = {
