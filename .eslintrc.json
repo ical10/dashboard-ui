@@ -19,6 +19,7 @@
     "react/no-unescaped-entities": ["warn"],
     "react/prop-types": ["off"],
     "@next/next/no-img-element": ["off"],
-    "import/no-unused-modules": [1]
+    "import/no-unused-modules": [1],
+    "@typescript-eslint/ban-ts-comment": ["warn"]
   }
 }

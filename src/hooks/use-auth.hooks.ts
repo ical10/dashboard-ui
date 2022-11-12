@@ -30,6 +30,8 @@ const useAuthHook = () => {
           type: 'bytes',
         });
 
+        console.log({signature});
+
         return signature;
       } else {
         throw new Error('Signing failed!');

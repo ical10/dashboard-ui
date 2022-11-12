@@ -10,13 +10,22 @@ import ListItemText from '@mui/material/ListItemText';
 import {web3Accounts, web3Enable} from '@polkadot/extension-dapp';
 import {InjectedAccountWithMeta} from '@polkadot/extension-inject/types';
 import {u8aToHex, stringToU8a} from '@polkadot/util';
-import {decodeAddress, signatureVerify} from '@polkadot/util-crypto';
+import {encodeAddress, decodeAddress, signatureVerify} from '@polkadot/util-crypto';
 
 import {useEffect, useState} from 'react';
 
+import {signIn} from 'next-auth/react';
+import getConfig from 'next/config';
+
 import useAuthHook from 'src/hooks/use-auth.hooks';
 
-const ExtensionAccounts = () => {
+const {publicRuntimeConfig} = getConfig();
+
+interface IExtensionAccounts {
+  onLoginSuccess: () => void;
+}
+
+const ExtensionAccounts = ({onLoginSuccess}: IExtensionAccounts) => {
   const {signWithWallet} = useAuthHook();
 
   const [accounts, setAccounts] = useState<InjectedAccountWithMeta[]>([]);
@@ -47,20 +56,33 @@ const ExtensionAccounts = () => {
   const handleConnect = async () => {
     if (!selectedAccount) return null;
 
-    const message = 'login';
+    const message = publicRuntimeConfig.authMessage;
     const signature = await signWithWallet(selectedAccount, message);
 
     const publicKey = decodeAddress(selectedAccount.address);
     const hexPublicKey = u8aToHex(publicKey);
+    const polkadotAddress = encodeAddress(hexPublicKey, 0);
 
     if (!signature) {
-      alert('Siging cancelled!');
+      alert('Signing cancelled!');
       return null;
     }
 
-    const {isValid} = signatureVerify(message, signature ?? stringToU8a(''), hexPublicKey);
+    const {isValid} = signatureVerify(
+      message,
+      signature ?? stringToU8a(''),
+      selectedAccount.address,
+    );
 
-    console.log(`Signature valid?: ${isValid}`);
+    if (isValid) {
+      onLoginSuccess();
+
+      signIn('credential', {
+        publicAddress: polkadotAddress,
+        signature,
+        callbackUrl: `${publicRuntimeConfig.authURL}/dashboard`,
+      });
+    }
   };
 
   return (
