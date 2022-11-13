@@ -1,3 +1,6 @@
+import type {GetServerSidePropsContext} from 'next';
+import {getSession} from 'next-auth/react';
+
 import OverviewTable from 'src/components/OverviewTable';
 import Sidebar from 'src/components/Sidebar';
 
@@ -17,3 +20,20 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  const session = await getSession(context);
+
+  if (!session) {
+    return {
+      redirect: {
+        destination: '/',
+        permanent: false,
+      },
+    };
+  }
+
+  return {
+    props: {session},
+  };
+}

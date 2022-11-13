@@ -13,6 +13,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import SvgIcon from '@mui/material/SvgIcon';
 
+import {signOut} from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -95,16 +96,19 @@ const Sidebar = () => {
       <div className="mt-auto mb-12">
         <nav id="logout-nav" aria-label="logout-nav">
           <List>
-            <Link href="/" passHref>
-              <ListItem disablePadding>
-                <ListItemButton>
-                  <ListItemIcon>
-                    <SvgIcon component={LogoutIcon} inheritViewBox />
-                  </ListItemIcon>
-                  <ListItemText primary="Logout" primaryTypographyProps={{color: 'white'}} />
-                </ListItemButton>
-              </ListItem>
-            </Link>
+            <ListItem disablePadding>
+              <ListItemButton
+                onClick={() => {
+                  console.log('called');
+                  signOut();
+                }}
+              >
+                <ListItemIcon>
+                  <SvgIcon component={LogoutIcon} inheritViewBox />
+                </ListItemIcon>
+                <ListItemText primary="Logout" primaryTypographyProps={{color: 'white'}} />
+              </ListItemButton>
+            </ListItem>
           </List>
         </nav>
       </div>

@@ -1,11 +1,20 @@
-import type {NextPage} from 'next';
+import type {NextPage, GetServerSidePropsContext} from 'next';
+import {getSession} from 'next-auth/react';
+import dynamic from 'next/dynamic';
 import Head from 'next/head';
 import {useRouter} from 'next/router';
+
+const ExtensionAccounts = dynamic(
+  () => import('src/components/ExtensionAccounts/ExtensionAccounts'),
+  {
+    ssr: false,
+  },
+);
 
 const Home: NextPage = () => {
   const router = useRouter();
 
-  const handleClick = () => {
+  const handleGoToDashboard = () => {
     router.push('/dashboard');
   };
 
@@ -20,7 +29,7 @@ const Home: NextPage = () => {
       <main className="flex justify-center">
         <div className="m-0 absolute top-[50%] -translate-y-2/4 flex flex-col justify-center items-center">
           <h1>Welcome to Polkadot Anti-scam Dashboard!</h1>
-          <button onClick={() => handleClick()}>Go to dashboard</button>
+          <ExtensionAccounts onLoginSuccess={handleGoToDashboard} />
         </div>
       </main>
     </div>
@@ -28,3 +37,20 @@ const Home: NextPage = () => {
 };
 
 export default Home;
+
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  const session = await getSession(context);
+
+  if (session) {
+    return {
+      redirect: {
+        destination: '/dashboard',
+        permanent: false,
+      },
+    };
+  }
+
+  return {
+    props: {session},
+  };
+}
