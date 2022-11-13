@@ -9,8 +9,8 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import {web3Accounts, web3Enable} from '@polkadot/extension-dapp';
 import {InjectedAccountWithMeta} from '@polkadot/extension-inject/types';
-import {u8aToHex, stringToU8a} from '@polkadot/util';
-import {encodeAddress, decodeAddress, signatureVerify} from '@polkadot/util-crypto';
+import {u8aToHex} from '@polkadot/util';
+import {encodeAddress, decodeAddress} from '@polkadot/util-crypto';
 
 import {useEffect, useState} from 'react';
 
@@ -21,11 +21,7 @@ import useAuthHook from 'src/hooks/use-auth.hooks';
 
 const {publicRuntimeConfig} = getConfig();
 
-interface IExtensionAccounts {
-  onLoginSuccess: () => void;
-}
-
-const ExtensionAccounts = ({onLoginSuccess}: IExtensionAccounts) => {
+const ExtensionAccounts = () => {
   const {signWithWallet} = useAuthHook();
 
   const [accounts, setAccounts] = useState<InjectedAccountWithMeta[]>([]);
@@ -68,21 +64,11 @@ const ExtensionAccounts = ({onLoginSuccess}: IExtensionAccounts) => {
       return null;
     }
 
-    const {isValid} = signatureVerify(
-      message,
-      signature ?? stringToU8a(''),
-      selectedAccount.address,
-    );
-
-    if (isValid) {
-      onLoginSuccess();
-
-      signIn('credential', {
-        publicAddress: polkadotAddress,
-        signature,
-        callbackUrl: `${publicRuntimeConfig.authURL}/dashboard`,
-      });
-    }
+    signIn('credential', {
+      publicAddress: polkadotAddress,
+      signature,
+      callbackUrl: `${publicRuntimeConfig.authURL}/dashboard`,
+    });
   };
 
   return (
