@@ -99,7 +99,6 @@ const Sidebar = () => {
             <ListItem disablePadding>
               <ListItemButton
                 onClick={() => {
-                  console.log('called');
                   signOut();
                 }}
               >

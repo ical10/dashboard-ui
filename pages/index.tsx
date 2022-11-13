@@ -2,7 +2,6 @@ import type {NextPage, GetServerSidePropsContext} from 'next';
 import {getSession} from 'next-auth/react';
 import dynamic from 'next/dynamic';
 import Head from 'next/head';
-import {useRouter} from 'next/router';
 
 const ExtensionAccounts = dynamic(
   () => import('src/components/ExtensionAccounts/ExtensionAccounts'),
@@ -12,12 +11,6 @@ const ExtensionAccounts = dynamic(
 );
 
 const Home: NextPage = () => {
-  const router = useRouter();
-
-  const handleGoToDashboard = () => {
-    router.push('/dashboard');
-  };
-
   return (
     <div>
       <Head>
@@ -29,7 +22,7 @@ const Home: NextPage = () => {
       <main className="flex justify-center">
         <div className="m-0 absolute top-[50%] -translate-y-2/4 flex flex-col justify-center items-center">
           <h1>Welcome to Polkadot Anti-scam Dashboard!</h1>
-          <ExtensionAccounts onLoginSuccess={handleGoToDashboard} />
+          <ExtensionAccounts />
         </div>
       </main>
     </div>
