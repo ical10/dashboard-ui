@@ -1,4 +1,4 @@
-import Button from '@mui/material/Button';
+import { Button } from '@material-tailwind/react';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -7,22 +7,23 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
-import {web3Accounts, web3Enable} from '@polkadot/extension-dapp';
-import {InjectedAccountWithMeta} from '@polkadot/extension-inject/types';
-import {u8aToHex} from '@polkadot/util';
-import {encodeAddress, decodeAddress} from '@polkadot/util-crypto';
+import { web3Accounts, web3Enable } from '@polkadot/extension-dapp';
+import { InjectedAccountWithMeta } from '@polkadot/extension-inject/types';
+import { u8aToHex } from '@polkadot/util';
+import { encodeAddress, decodeAddress } from '@polkadot/util-crypto';
 
-import {useEffect, useState} from 'react';
+import { useEffect, useState } from 'react';
 
-import {signIn} from 'next-auth/react';
+import { signIn } from 'next-auth/react';
 import getConfig from 'next/config';
 
+import ReactIdenticon from 'src/components/ReactIdenticon';
 import useAuthHook from 'src/hooks/use-auth.hooks';
 
-const {publicRuntimeConfig} = getConfig();
+const { publicRuntimeConfig } = getConfig();
 
 const ExtensionAccounts = () => {
-  const {signWithWallet} = useAuthHook();
+  const { signWithWallet } = useAuthHook();
 
   const [accounts, setAccounts] = useState<InjectedAccountWithMeta[]>([]);
   const [visible, setVisible] = useState<boolean>(false);
@@ -30,6 +31,7 @@ const ExtensionAccounts = () => {
 
   const toggleVisible = () => {
     setVisible(!visible);
+    getAccounts();
   };
 
   const getAccounts = async () => {
@@ -73,7 +75,7 @@ const ExtensionAccounts = () => {
 
   return (
     <div>
-      <Button color="primary" variant="contained" onClick={toggleVisible}>
+      <Button variant="outlined" onClick={toggleVisible}>
         Open Accounts
       </Button>
       <Dialog open={visible} onClose={toggleVisible} aria-labelledby="responsive-dialog-title">
@@ -98,6 +100,10 @@ const ExtensionAccounts = () => {
                   <ListItemButton
                     sx={{
                       '&.MuiListItemButton-root': {
+                        display: 'flex',
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        gap: '1.5rem',
                         '&:hover': {
                           backgroundColor: 'hsl(328, 100%, 45%)',
                           color: 'white',
@@ -106,7 +112,11 @@ const ExtensionAccounts = () => {
                     }}
                     onClick={() => handleClick(account)}
                   >
-                    <ListItemText>{account.address}</ListItemText>
+                    <ReactIdenticon address={account.address} />
+                    <div className="flex flex-row gap-2">
+                      <div>{account.meta.name ?? 'Unnamed Account'}</div>
+                      <div>{account.address}</div>
+                    </div>
                   </ListItemButton>
                 </ListItem>
               ))
@@ -118,16 +128,10 @@ const ExtensionAccounts = () => {
           </List>
         </DialogContent>
         <DialogActions>
-          <Button color="error" variant="contained" autoFocus onClick={toggleVisible}>
+          <Button variant="outlined" onClick={toggleVisible}>
             Cancel
           </Button>
-          <Button
-            disabled={!selectedAccount}
-            color="primary"
-            variant="contained"
-            autoFocus
-            onClick={handleConnect}
-          >
+          <Button disabled={!selectedAccount} variant="filled" autoFocus onClick={handleConnect}>
             Connect
           </Button>
         </DialogActions>

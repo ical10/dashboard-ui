@@ -1,4 +1,4 @@
-import {createTheme} from '@mui/material/styles';
+import { createTheme } from '@mui/material/styles';
 
 const font = "'Lato', sans-serif";
 
@@ -25,7 +25,7 @@ const muiTheme = createTheme({
           fontSize: '28px',
           lineHeight: '33.6px',
 
-          color: 'white',
+          color: 'black',
         },
       },
     },
