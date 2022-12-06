@@ -8,8 +8,8 @@ import Select from '@mui/material/Select';
 import Switch from '@mui/material/Switch';
 import TextField from '@mui/material/TextField';
 
-import React, {useState, useEffect} from 'react';
-import {useForm, Controller, SubmitHandler} from 'react-hook-form';
+import React, { useState, useEffect } from 'react';
+import { useForm, Controller, SubmitHandler } from 'react-hook-form';
 
 type FormData = {
   domains: string[];
@@ -28,7 +28,7 @@ type SubmissionPayload = {
 };
 
 const ReportForm = () => {
-  const {control, handleSubmit} = useForm<FormData>({
+  const { control, handleSubmit } = useForm<FormData>({
     defaultValues: {
       implementer: '',
       domains: [],
@@ -39,7 +39,7 @@ const ReportForm = () => {
   const onSubmit: SubmitHandler<FormData> = (data, event) => {
     if (event) {
       event.preventDefault();
-      console.log('the data is: ', {data});
+      console.log('the data is: ', { data });
     }
   };
 
@@ -65,19 +65,19 @@ const ReportForm = () => {
     <Box
       component="form"
       sx={{
-        '& .MuiTextField-root': {m: 1},
+        '& .MuiTextField-root': { m: 1 },
       }}
       noValidate
       onSubmit={handleSubmit(onSubmit)}
       autoComplete="off"
     >
       <div className="flex flex-col gap-3">
-        <FormControl sx={{m: 1, minWidth: 120}} size="small">
+        <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
           <InputLabel id="demo-select-small">Implementer</InputLabel>
           <Controller
             name="implementer"
             control={control}
-            render={({field: {value, onChange}}) => (
+            render={({ field: { value, onChange } }) => (
               <Select
                 required
                 error={selectedImplementer.length === 0}
@@ -100,7 +100,7 @@ const ReportForm = () => {
         <Controller
           name="domains"
           control={control}
-          render={({field: {onChange}}) => (
+          render={({ field: { onChange } }) => (
             <TextField
               required
               error={
@@ -147,7 +147,7 @@ const ReportForm = () => {
         <Controller
           name="screenshotUrls"
           control={control}
-          render={({field: {onChange}}) => (
+          render={({ field: { onChange } }) => (
             <TextField
               required
               error={
@@ -184,7 +184,7 @@ const ReportForm = () => {
             key={`${domain}-${i}`}
             name="isTakenDowns"
             control={control}
-            render={({field: {value, onChange}}) => (
+            render={({ field: { value, onChange } }) => (
               <FormControl>
                 <FormControlLabel
                   label={domain}
@@ -194,7 +194,7 @@ const ReportForm = () => {
                       color="primary"
                       value={domain}
                       onChange={event => {
-                        const {checked} = event.target;
+                        const { checked } = event.target;
 
                         const myArray = [...value];
                         myArray[i] = checked;
