@@ -1,10 +1,10 @@
 import getConfig from 'next/config';
 
-import axios, {AxiosInstance} from 'axios';
+import axios, { AxiosInstance } from 'axios';
 
 let API: AxiosInstance;
 
-const {serverRuntimeConfig} = getConfig();
+const { serverRuntimeConfig } = getConfig();
 
 const setupAPIClient = () => {
   API = axios.create({

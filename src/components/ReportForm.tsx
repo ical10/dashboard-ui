@@ -11,6 +11,8 @@ import TextField from '@mui/material/TextField';
 import React, { useState, useEffect } from 'react';
 import { useForm, Controller, SubmitHandler } from 'react-hook-form';
 
+import { useSession } from 'next-auth/react';
+
 type FormData = {
   domains: string[];
   isTakenDowns: boolean[];
@@ -19,12 +21,10 @@ type FormData = {
   implementer: string;
 };
 
-type SubmissionPayload = {
-  domain: string;
-  isTakenDown: boolean;
-  screenshotUrl: string;
-  urlscan?: string;
-  implementer?: string;
+type SubmissionAPIPayload = {
+  domainname: string;
+  isTakendown: boolean;
+  screenshot: string;
 };
 
 const ReportForm = () => {
@@ -36,10 +36,23 @@ const ReportForm = () => {
     },
   });
 
+  const { data: session } = useSession();
+
   const onSubmit: SubmitHandler<FormData> = (data, event) => {
     if (event) {
       event.preventDefault();
-      console.log('the data is: ', { data });
+
+      const { domains, isTakenDowns, screenshotUrls } = data;
+
+      const submissionPayload: SubmissionAPIPayload[] = domains.map((x, i) => {
+        return {
+          domainname: x ?? '',
+          isTakendown: isTakenDowns[i] ?? false,
+          screenshot: screenshotUrls[i] ?? '',
+        };
+      });
+
+      setSubmissionPayload(submissionPayload);
     }
   };
 
@@ -55,11 +68,42 @@ const ReportForm = () => {
 
   const [rawScreenshotUrls, setRawScreenshotUrls] = useState('');
   const [urls, setUrls] = useState<string[] | []>([]);
+  const [submissionPayload, setSubmissionPayload] = useState<SubmissionAPIPayload[] | null>(null);
 
-  const [implementers] = useState<string[] | []>(['Tim Janssen', 'frankywild', 'pastaMan']);
-  const [selectedImplementer, setSelectedImplementer] = useState('');
+  const [sendingSubmission, setSendingSubmission] = useState(false);
 
-  const [submissionPayload, setSubmissionPayload] = useState<SubmissionPayload[] | []>([]);
+  const handleAsyncSubmit = async (submissionPayload: SubmissionAPIPayload[]) => {
+    setSendingSubmission(true);
+
+    try {
+      if (session) {
+        const { sig, address } = session.user;
+
+        const fullSubmissionPayload = {
+          payload: [...submissionPayload],
+          address: address,
+        };
+
+        const resp = await fetch('/api/implementers', {
+          method: 'POST',
+          body: JSON.stringify(fullSubmissionPayload),
+          headers: {
+            Authorization: sig,
+          },
+        });
+
+        const { data } = await resp.json();
+      }
+    } catch (error) {
+      console.warn({ error });
+    } finally {
+      setSendingSubmission(false);
+    }
+  };
+
+  useEffect(() => {
+    if (submissionPayload) handleAsyncSubmit(submissionPayload);
+  }, [submissionPayload]);
 
   return (
     <Box
@@ -80,18 +124,15 @@ const ReportForm = () => {
             render={({ field: { value, onChange } }) => (
               <Select
                 required
-                error={selectedImplementer.length === 0}
                 labelId="demo-select-small"
                 id="demo-select-small"
                 value={value}
                 onChange={onChange}
                 label="Implementer"
               >
-                {implementers.map(implementer => (
-                  <MenuItem key={implementer} value={implementer}>
-                    {implementer}
-                  </MenuItem>
-                ))}
+                <MenuItem key={session?.user.address} value={session?.user.address}>
+                  {session?.user.address}
+                </MenuItem>
               </Select>
             )}
           />
