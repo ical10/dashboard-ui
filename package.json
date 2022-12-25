@@ -9,11 +9,12 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@emotion/react": "^11.10.0",
-    "@emotion/styled": "^11.10.0",
+    "@emotion/react": "^11.10.5",
+    "@emotion/styled": "^11.10.5",
     "@material-tailwind/react": "^1.2.4",
     "@mui/icons-material": "^5.10.2",
-    "@mui/material": "^5.10.2",
+    "@mui/lab": "^5.0.0-alpha.113",
+    "@mui/material": "^5.11.1",
     "@mui/x-data-grid": "^5.15.3",
     "@polkadot/api": "^9.5.2",
     "@polkadot/extension-dapp": "^0.44.6",

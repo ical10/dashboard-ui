@@ -1,3 +1,4 @@
+import LoadingButton from '@mui/lab/LoadingButton';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import FormControl from '@mui/material/FormControl';
@@ -27,7 +28,16 @@ type SubmissionAPIPayload = {
   screenshot: string;
 };
 
-const ReportForm = () => {
+export type OpenSnackbarProps = {
+  message: string;
+  type?: string;
+};
+
+type ReportFormProps = {
+  onOpenSnackbar?: (props: OpenSnackbarProps) => void;
+};
+
+export const ReportForm = ({ onOpenSnackbar }: ReportFormProps) => {
   const { control, handleSubmit } = useForm<FormData>({
     defaultValues: {
       implementer: '',
@@ -93,6 +103,20 @@ const ReportForm = () => {
         });
 
         const { data } = await resp.json();
+        const { status, message } = data;
+        if (status === 1) {
+          onOpenSnackbar &&
+            onOpenSnackbar({
+              message,
+              type: 'success',
+            });
+        } else {
+          onOpenSnackbar &&
+            onOpenSnackbar({
+              message,
+              type: 'error',
+            });
+        }
       }
     } catch (error) {
       console.warn({ error });
@@ -104,6 +128,16 @@ const ReportForm = () => {
   useEffect(() => {
     if (submissionPayload) handleAsyncSubmit(submissionPayload);
   }, [submissionPayload]);
+  const isDomainError = Boolean(
+    domains.length === 0 ||
+      (domains.length > 0 && urls.length > 0 && domains.length !== urls.length),
+  );
+
+  const isUrlError = Boolean(
+    urls.length === 0 || (domains.length > 0 && urls.length > 0 && domains.length !== urls.length),
+  );
+
+  const isFormInvalid = isDomainError || isUrlError;
 
   return (
     <Box
@@ -144,15 +178,11 @@ const ReportForm = () => {
           render={({ field: { onChange } }) => (
             <TextField
               required
-              error={
-                domains.length === 0 ||
-                (domains.length > 0 && urls.length > 0 && domains.length !== urls.length)
-              }
+              error={isDomainError}
               id="outlined-required"
               label="Domain"
               helperText={
-                domains.length === 0 ||
-                (domains.length > 0 && urls.length > 0 && domains.length !== urls.length)
+                isDomainError
                   ? 'Submitted urls and domains must have same length and not be empty!'
                   : 'Input domain here'
               }
@@ -191,15 +221,11 @@ const ReportForm = () => {
           render={({ field: { onChange } }) => (
             <TextField
               required
-              error={
-                urls.length === 0 ||
-                (domains.length > 0 && urls.length > 0 && domains.length !== urls.length)
-              }
+              error={isUrlError}
               id="outlined-required"
               label="Screenshot URLs"
               helperText={
-                urls.length === 0 ||
-                (domains.length > 0 && urls.length > 0 && domains.length !== urls.length)
+                isUrlError
                   ? 'Submitted urls and domains must have same length and not be empty!'
                   : 'Paste screenshot urls here'
               }
@@ -250,12 +276,19 @@ const ReportForm = () => {
           />
         ))}
 
-        <Button variant="contained" color="primary" type="submit">
-          Submit
-        </Button>
+        {sendingSubmission ? (
+          <LoadingButton
+            loading
+            loadingIndicator="Loading…"
+            variant="contained"
+            sx={{ height: '46px' }}
+          />
+        ) : (
+          <Button disabled={isFormInvalid} variant="contained" color="primary" type="submit">
+            Submit
+          </Button>
+        )}
       </div>
     </Box>
   );
 };
-
-export default ReportForm;
