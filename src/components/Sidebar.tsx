@@ -13,7 +13,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import SvgIcon from '@mui/material/SvgIcon';
 
-import {signOut} from 'next-auth/react';
+import { signOut } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -44,7 +44,7 @@ const Sidebar = () => {
                   <ListItemIcon>
                     <SvgIcon component={DashboardIcon} inheritViewBox />
                   </ListItemIcon>
-                  <ListItemText primary="Dashboard" primaryTypographyProps={{color: 'white'}} />
+                  <ListItemText primary="Dashboard" primaryTypographyProps={{ color: 'white' }} />
                 </ListItemButton>
               </ListItem>
             </Link>
@@ -54,7 +54,10 @@ const Sidebar = () => {
                   <ListItemIcon>
                     <SvgIcon component={ImplementersIcon} inheritViewBox />
                   </ListItemIcon>
-                  <ListItemText primary="Implementers" primaryTypographyProps={{color: 'white'}} />
+                  <ListItemText
+                    primary="Implementers"
+                    primaryTypographyProps={{ color: 'white' }}
+                  />
                 </ListItemButton>
               </ListItem>
             </Link>
@@ -63,7 +66,7 @@ const Sidebar = () => {
                 <ListItemIcon>
                   <SvgIcon component={CuratorsIcon} inheritViewBox />
                 </ListItemIcon>
-                <ListItemText primary="Curators" primaryTypographyProps={{color: 'white'}} />
+                <ListItemText primary="Curators" primaryTypographyProps={{ color: 'white' }} />
               </ListItemButton>
             </ListItem>
             <ListItem disablePadding>
@@ -71,7 +74,7 @@ const Sidebar = () => {
                 <ListItemIcon>
                   <SvgIcon component={RewardsIcon} inheritViewBox />
                 </ListItemIcon>
-                <ListItemText primary="Rewards" primaryTypographyProps={{color: 'white'}} />
+                <ListItemText primary="Rewards" primaryTypographyProps={{ color: 'white' }} />
               </ListItemButton>
             </ListItem>
             <ListItem disablePadding>
@@ -79,7 +82,7 @@ const Sidebar = () => {
                 <ListItemIcon>
                   <SvgIcon component={AggregatesIcon} inheritViewBox />
                 </ListItemIcon>
-                <ListItemText primary="Aggregates" primaryTypographyProps={{color: 'white'}} />
+                <ListItemText primary="Aggregates" primaryTypographyProps={{ color: 'white' }} />
               </ListItemButton>
             </ListItem>
             <ListItem disablePadding>
@@ -87,7 +90,7 @@ const Sidebar = () => {
                 <ListItemIcon>
                   <SvgIcon component={GoalsIcon} inheritViewBox />
                 </ListItemIcon>
-                <ListItemText primary="Goals" primaryTypographyProps={{color: 'white'}} />
+                <ListItemText primary="Goals" primaryTypographyProps={{ color: 'white' }} />
               </ListItemButton>
             </ListItem>
           </List>
@@ -105,7 +108,7 @@ const Sidebar = () => {
                 <ListItemIcon>
                   <SvgIcon component={LogoutIcon} inheritViewBox />
                 </ListItemIcon>
-                <ListItemText primary="Logout" primaryTypographyProps={{color: 'white'}} />
+                <ListItemText primary="Logout" primaryTypographyProps={{ color: 'white' }} />
               </ListItemButton>
             </ListItem>
           </List>
