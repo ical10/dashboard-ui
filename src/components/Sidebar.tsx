@@ -5,13 +5,15 @@ import GoalsIcon from '@/icons/GoalsIcon.svg';
 import ImplementersIcon from '@/icons/ImplementersIcon.svg';
 import LogoutIcon from '@/icons/LogoutIcon.svg';
 import RewardsIcon from '@/icons/RewardsIcon.svg';
-import Box from '@mui/material/Box';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import SvgIcon from '@mui/material/SvgIcon';
+import {
+  Box,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  SvgIcon,
+} from '@mui/material';
 
 import { signOut } from 'next-auth/react';
 import Image from 'next/image';

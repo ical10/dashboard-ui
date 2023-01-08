@@ -1,12 +1,10 @@
-import Box from '@mui/material/Box';
-import Tab from '@mui/material/Tab';
-import Tabs from '@mui/material/Tabs';
+import { Box, Tab, Tabs } from '@mui/material';
 import Typography from '@mui/material/Typography';
-import {useTheme} from '@mui/material/styles';
+import { useTheme } from '@mui/material/styles';
 
 import * as React from 'react';
 
-import {Home, Profile, Element3, Setting2} from 'iconsax-react';
+import { Home, Profile, Element3, Setting2 } from 'iconsax-react';
 import EntriesBarChart from 'src/components/EntriesBarChart';
 import TakenDownLineChart from 'src/components/TakenDownLineChart';
 
@@ -17,7 +15,7 @@ interface TabPanelProps {
 }
 
 function TabPanel(props: TabPanelProps) {
-  const {children, value, index, ...other} = props;
+  const { children, value, index, ...other } = props;
 
   return (
     <div
@@ -28,7 +26,7 @@ function TabPanel(props: TabPanelProps) {
       {...other}
     >
       {value === index && (
-        <Box sx={{p: 3}}>
+        <Box sx={{ p: 3 }}>
           <Typography>{children}</Typography>
         </Box>
       )}
@@ -53,8 +51,8 @@ export default function BasicTabs() {
   };
 
   return (
-    <Box sx={{width: '100%'}}>
-      <Box sx={{borderBottom: 1, borderColor: 'divider'}}>
+    <Box sx={{ width: '100%' }}>
+      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs
           sx={{
             '& .MuiTabs-flexContainer': {
