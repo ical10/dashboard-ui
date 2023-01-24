@@ -23,8 +23,6 @@ import { useTheme } from '@mui/material/styles';
 
 import { useEffect, useState } from 'react';
 
-import { useSession } from 'next-auth/react';
-
 import PropTypes from 'prop-types';
 
 interface TablePaginationActionsProps {
@@ -91,31 +89,42 @@ TablePaginationActions.propTypes = {
   rowsPerPage: PropTypes.number.isRequired,
 };
 
-type SubmissionDataProps = {
-  id: number;
+type UrlDataProps = {
+  createdAt: string;
   domainname: string;
-  usid: string;
-  proof: null | string;
-  exists_in_repo: null | boolean;
+  eligible: null | boolean;
   exists_in_db: null | boolean;
-  eligible_takendown: null | boolean;
-  eligible_submitted: null | boolean;
-  ineligible_submitted: null | boolean;
-  pull_request_id: null | string;
+  exists_in_repo: null | boolean;
+  id: number;
+  pr_submitted: null | boolean;
+  proof: null | string;
+  pull_request_id: null | number;
   status_id: number;
   submitted_by: number;
+  takendown: null | boolean;
+  updatedAt: string;
+  usid: string;
+};
+
+type UserDataProps = {
   createdAt: string;
+  id: number;
+  identifier: string;
+  public_address: string;
+  status_id: number;
   updatedAt: string;
 };
 
-const OverviewTable = () => {
-  const { data: session } = useSession();
+type SubmissionDataProps = {
+  url_data: UrlDataProps;
+  user_data: UserDataProps;
+};
 
+const OverviewTable = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const [submissions, setSubmissions] = useState<SubmissionDataProps[] | null>(null);
-
   const [loadingSubmissions, setLoadingSubmissions] = useState(false);
 
   useEffect(() => {
@@ -123,33 +132,16 @@ const OverviewTable = () => {
       setLoadingSubmissions(true);
 
       try {
-        if (session) {
-          const { sig, address } = session.user;
+        const resp = await fetch('/api', {
+          method: 'GET',
+        });
 
-          const payload = {
-            address,
-          };
+        const { data } = await resp.json();
 
-          const resp = await fetch('/api/dashboard', {
-            method: 'POST',
-            body: JSON.stringify(payload),
-            headers: {
-              Authorization: sig,
-            },
-          });
-
-          const { data } = await resp.json();
-          if (data.length) {
-            setSubmissions(data);
-            console.log('submissions loaded');
-          } else {
-            console.log('error');
-            // onOpenSnackbar &&
-            //   onOpenSnackbar({
-            //     message,
-            //     type: 'error',
-            //   });
-          }
+        const { data: responseData } = data;
+        if (responseData.length) {
+          setSubmissions(responseData);
+          return;
         }
       } catch (error) {
         console.warn({ error });
@@ -219,25 +211,25 @@ const OverviewTable = () => {
               ? (rowsPerPage > 0
                   ? submissions.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   : submissions
-                ).map((row, i) => (
+                ).map(({ url_data, user_data }, i) => (
                   <TableRow
-                    key={`${row.submitted_by}-${i}`}
+                    key={`${url_data.submitted_by}-${i}`}
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                   >
                     <TableCell id="implementer-id" component="th" scope="row" align="left">
-                      {row.submitted_by}
+                      {user_data.identifier}
                     </TableCell>
                     <TableCell id="date" align="left">
-                      {new Date(row.createdAt).toLocaleDateString()}
+                      {new Date(url_data.createdAt ?? '').toLocaleDateString()}
                     </TableCell>
                     <TableCell id="github-pr" align="left">
-                      {row.pull_request_id !== null ? (
+                      {url_data.pull_request_id !== null ? (
                         <a
-                          href={`https://github.com/polkadot-js/phishing/pull/${row.pull_request_id}`}
+                          href={`https://github.com/polkadot-js/phishing/pull/${url_data.pull_request_id}`}
                           target="_blank"
                           rel="noreferrer noopener"
                         >
-                          {row.pull_request_id}
+                          {url_data.pull_request_id}
                         </a>
                       ) : (
                         <Typography>NA</Typography>
@@ -245,16 +237,16 @@ const OverviewTable = () => {
                     </TableCell>
                     <TableCell id="domain-name" align="left">
                       <a
-                        href={isValidHttpUrl(row.domainname) as string}
+                        href={isValidHttpUrl(url_data.domainname) as string}
                         target="_blank"
                         rel="noreferrer noopener"
                       >
-                        {extractDomainName(row.domainname)}
+                        {extractDomainName(url_data.domainname)}
                       </a>
                     </TableCell>
                     <TableCell id="urlscan-or-image-proof" align="left">
-                      {row.proof !== null ? (
-                        <a href={row.proof} target="_blank" rel="noreferrer noopener">
+                      {url_data.proof !== null ? (
+                        <a href={url_data.proof} target="_blank" rel="noreferrer noopener">
                           Image / urlscan proof
                         </a>
                       ) : (
@@ -262,10 +254,10 @@ const OverviewTable = () => {
                       )}
                     </TableCell>
                     <TableCell id="taken-down-status" align="center">
-                      {row.status_id ? 'Yes' : 'No'}
+                      {url_data.status_id ? 'Yes' : 'No'}
                     </TableCell>
                     <TableCell id="confirmed-takendown" align="center">
-                      {row.eligible_takendown ? (
+                      {url_data.eligible && url_data.takendown ? (
                         <span role="img" aria-label="checked">
                           ✅
                         </span>
@@ -276,9 +268,9 @@ const OverviewTable = () => {
                       )}
                     </TableCell>
                     <TableCell id="eligible-submissions" align="center">
-                      {row.eligible_submitted === null
+                      {url_data.pr_submitted === null
                         ? 'NA'
-                        : row.eligible_submitted === true
+                        : url_data.pr_submitted === true
                         ? 'Yes'
                         : 'No'}
                     </TableCell>

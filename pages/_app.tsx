@@ -1,6 +1,5 @@
 import createCache from '@emotion/cache';
 import { CacheProvider } from '@emotion/react';
-import { ThemeProvider as MTThemeProvider } from '@material-tailwind/react';
 import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 
 import { SessionProvider } from 'next-auth/react';
@@ -19,13 +18,11 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
   return (
     <StyledEngineProvider injectFirst>
       <CacheProvider value={cache}>
-        <MTThemeProvider>
-          <ThemeProvider theme={muiTheme}>
-            <SessionProvider session={session}>
-              <Component {...pageProps} />
-            </SessionProvider>
-          </ThemeProvider>
-        </MTThemeProvider>
+        <ThemeProvider theme={muiTheme}>
+          <SessionProvider session={session}>
+            <Component {...pageProps} />
+          </SessionProvider>
+        </ThemeProvider>
       </CacheProvider>
     </StyledEngineProvider>
   );

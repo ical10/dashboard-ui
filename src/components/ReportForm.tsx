@@ -4,6 +4,8 @@ import {
   Button,
   FormControl,
   FormControlLabel,
+  FormHelperText,
+  FormLabel,
   InputLabel,
   MenuItem,
   Select,
@@ -68,6 +70,7 @@ export const ReportForm = ({ onOpenSnackbar }: ReportFormProps) => {
     }
   };
 
+  const [implementer, setImplementer] = useState<string | null>(null);
   const [domains, setDomains] = useState<string[] | []>([]);
   const [formatted, setFormatted] = useState<string>('');
 
@@ -130,6 +133,7 @@ export const ReportForm = ({ onOpenSnackbar }: ReportFormProps) => {
   useEffect(() => {
     if (submissionPayload) handleAsyncSubmit(submissionPayload);
   }, [submissionPayload]);
+
   const isDomainError = Boolean(
     domains.length === 0 ||
       (domains.length > 0 && urls.length > 0 && domains.length !== urls.length),
@@ -138,6 +142,8 @@ export const ReportForm = ({ onOpenSnackbar }: ReportFormProps) => {
   const isUrlError = Boolean(
     urls.length === 0 || (domains.length > 0 && urls.length > 0 && domains.length !== urls.length),
   );
+
+  const isImplementerError = !implementer;
 
   const isFormInvalid = isDomainError || isUrlError;
 
@@ -163,7 +169,12 @@ export const ReportForm = ({ onOpenSnackbar }: ReportFormProps) => {
                 labelId="demo-select-small"
                 id="demo-select-small"
                 value={value}
-                onChange={onChange}
+                onChange={event => {
+                  const implementer = event.target.value;
+
+                  setImplementer(implementer);
+                  onChange(event);
+                }}
                 label="Implementer"
               >
                 <MenuItem key={session?.user.address} value={session?.user.address}>
@@ -172,6 +183,9 @@ export const ReportForm = ({ onOpenSnackbar }: ReportFormProps) => {
               </Select>
             )}
           />
+          <FormHelperText error={isImplementerError}>
+            {isImplementerError ? 'Please select the implementer!' : ''}
+          </FormHelperText>
         </FormControl>
 
         <Controller
@@ -182,7 +196,7 @@ export const ReportForm = ({ onOpenSnackbar }: ReportFormProps) => {
               required
               error={isDomainError}
               id="outlined-required"
-              label="Domain"
+              label="Multiline domains, e.g. https://scam.site/wallets, https://scam.xyz/en"
               helperText={
                 isDomainError
                   ? 'Submitted urls and domains must have same length and not be empty!'
@@ -225,7 +239,7 @@ export const ReportForm = ({ onOpenSnackbar }: ReportFormProps) => {
               required
               error={isUrlError}
               id="outlined-required"
-              label="Screenshot URLs"
+              label="Screenshot URLs, e.g. https://github-image.com/image-1, https://github-image.com/image-2"
               helperText={
                 isUrlError
                   ? 'Submitted urls and domains must have same length and not be empty!'
@@ -255,6 +269,7 @@ export const ReportForm = ({ onOpenSnackbar }: ReportFormProps) => {
             control={control}
             render={({ field: { value, onChange } }) => (
               <FormControl>
+                <FormLabel component="label">Toggle right to mark as taken down</FormLabel>
                 <FormControlLabel
                   label={domain}
                   control={
