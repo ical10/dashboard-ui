@@ -1,49 +1,38 @@
-import type {NextPage, GetServerSidePropsContext} from 'next';
-import {getSession} from 'next-auth/react';
-import dynamic from 'next/dynamic';
-import Head from 'next/head';
+import { useState } from 'react';
 
-const ExtensionAccounts = dynamic(
-  () => import('src/components/ExtensionAccounts/ExtensionAccounts'),
-  {
-    ssr: false,
-  },
-);
+import { useSession } from 'next-auth/react';
 
-const Home: NextPage = () => {
+import OverviewTable from 'src/components/OverviewTable';
+import Sidebar from 'src/components/Sidebar';
+import WalletModal from 'src/components/connect/WalletModal';
+
+const Dashboard = () => {
+  const { data: session, status } = useSession();
+
+  const [isOpenModal, setOpenModal] = useState(false);
+
+  const isAuthenticated = Boolean(session && status);
+
+  const handleConnect = () => {
+    setOpenModal(true);
+  };
+
   return (
-    <div>
-      <Head>
-        <title>Polkadot Anti-scam Dashboard</title>
-        <meta name="Created by Polkadot anti-scam team" content="Anti-scam dashboard" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
-      <main className="flex justify-center">
-        <div className="m-0 absolute top-[50%] -translate-y-2/4 flex flex-col justify-center items-center">
-          <h1>Welcome to Polkadot Anti-scam Dashboard!</h1>
-          <ExtensionAccounts />
+    <>
+      <div className="flex flex-row">
+        <Sidebar isAuthenticated={isAuthenticated} onConnect={handleConnect} />
+        <div className="flex flex-col mt-6 mx-6">
+          <div className="mb-12">
+            <h1>Anti-scam Bounty</h1>
+            <h3 className="mt-12">Overview</h3>
+          </div>
+          <OverviewTable />
         </div>
-      </main>
-    </div>
+      </div>
+
+      <WalletModal open={isOpenModal} onClose={() => setOpenModal(false)} />
+    </>
   );
 };
 
-export default Home;
-
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const session = await getSession(context);
-
-  if (session) {
-    return {
-      redirect: {
-        destination: '/dashboard',
-        permanent: false,
-      },
-    };
-  }
-
-  return {
-    props: {session},
-  };
-}
+export default Dashboard;

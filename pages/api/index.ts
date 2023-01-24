@@ -3,22 +3,11 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import DashboardAPI from 'src/lib/api/base';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  if (req.method !== 'POST') throw new Error('method not allowed!');
-
-  if (!req.body || !req.headers) throw new Error('Request malformed!');
-
-  const { body, headers } = req;
-  const { authorization } = headers;
-
-  const { address } = JSON.parse(body);
+  if (req.method !== 'GET') throw new Error('method not allowed!');
 
   const { data } = await DashboardAPI().request({
     url: '/find',
     method: 'GET',
-    headers: {
-      signedmessage: authorization,
-      useraddress: address,
-    },
   });
 
   //   id: 3,

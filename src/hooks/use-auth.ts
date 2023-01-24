@@ -1,5 +1,5 @@
-import {InjectedAccountWithMeta} from '@polkadot/extension-inject/types';
-import {stringToHex} from '@polkadot/util';
+import { stringToHex } from '@polkadot/util';
+import { WalletAccount } from '@talismn/connect-wallets';
 
 export interface SignTransactionCallbackProps {
   apiConnected?: boolean;
@@ -9,22 +9,23 @@ export interface SignTransactionCallbackProps {
   message?: string;
 }
 
-const useAuthHook = () => {
+const useAuth = () => {
   const signWithWallet = async (
-    account: InjectedAccountWithMeta,
+    account: WalletAccount,
     message: string,
-    callback?: (param: SignTransactionCallbackProps) => void,
   ): Promise<string | null> => {
     try {
-      const {web3FromSource} = await import('@polkadot/extension-dapp');
+      const { web3FromSource, web3Enable } = await import('@polkadot/extension-dapp');
 
-      callback && callback({signerOpened: true});
+      const extension = await web3Enable('Polkadot Anti-scam Initiative');
 
-      const injector = await web3FromSource(account.meta.source);
+      const injector = await web3FromSource(account.source);
       const signRaw = injector?.signer?.signRaw;
 
+      if (!extension) return null;
+
       if (signRaw) {
-        const {signature} = await signRaw({
+        const { signature } = await signRaw({
           address: account.address,
           data: stringToHex(message),
           type: 'bytes',
@@ -44,4 +45,4 @@ const useAuthHook = () => {
   };
 };
 
-export default useAuthHook;
+export default useAuth;
