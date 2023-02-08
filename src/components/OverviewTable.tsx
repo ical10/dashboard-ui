@@ -28,13 +28,13 @@ import PropTypes from 'prop-types';
 interface TablePaginationActionsProps {
   count: number;
   page: number;
-  rowsPerPage: number;
+  rowsPerPage?: number;
   onPageChange: (event: React.MouseEvent<HTMLButtonElement>, newPage: number) => void;
 }
 
 function TablePaginationActions(props: TablePaginationActionsProps) {
   const theme = useTheme();
-  const { count, page, rowsPerPage, onPageChange } = props;
+  const { count, page, rowsPerPage = 10, onPageChange } = props;
 
   const handleFirstPageButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     onPageChange(event, 0);
@@ -122,7 +122,7 @@ type SubmissionDataProps = {
 
 const OverviewTable = () => {
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const [submissions, setSubmissions] = useState<SubmissionDataProps[] | null>(null);
   const [loadingSubmissions, setLoadingSubmissions] = useState(false);

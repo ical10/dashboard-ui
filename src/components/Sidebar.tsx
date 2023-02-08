@@ -17,16 +17,43 @@ import {
 
 import React from 'react';
 
-import { signOut } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
+
+import { ROLE_ID } from 'src/types/db';
 
 type PureSidebarProps = {
   isAuthenticated: boolean;
   onConnect: () => void;
 };
 
+type OptionProps = {
+  icon: any;
+  href: string;
+  title: string;
+};
+
+const MenuOption = (props: OptionProps) => {
+  const { icon, href, title } = props;
+
+  return (
+    <Link key={href} href={href} passHref>
+      <ListItem disablePadding>
+        <ListItemButton>
+          <ListItemIcon>
+            <SvgIcon component={icon} inheritViewBox />
+          </ListItemIcon>
+          <ListItemText primary={title} primaryTypographyProps={{ color: 'white' }} />
+        </ListItemButton>
+      </ListItem>
+    </Link>
+  );
+};
+
 function PureSidebar({ isAuthenticated, onConnect }: PureSidebarProps) {
+  const { data: session } = useSession();
+
   const menuOptions = [
     {
       icon: DashboardIcon,
@@ -44,6 +71,18 @@ function PureSidebar({ isAuthenticated, onConnect }: PureSidebarProps) {
       href: '/curators',
     },
   ];
+
+  const isImplementerSession = session?.user.user_roles.some(
+    role => role.role_id === ROLE_ID.Implementor,
+  );
+
+  const isCuratorSession = session?.user.user_roles.some(
+    role => role.role_id === ROLE_ID.Child_Curator || role.role_id === ROLE_ID.General_Curator,
+  );
+
+  const isPublicSession = !session;
+
+  console.log({ isCuratorSession, isImplementerSession, isPublicSession });
 
   return (
     <Box
@@ -65,21 +104,43 @@ function PureSidebar({ isAuthenticated, onConnect }: PureSidebarProps) {
       <div>
         <nav id="main-sidebar" aria-label="main-sidebar">
           <List>
-            {menuOptions.map(option => (
-              <Link key={option.href} href={option.href} passHref>
-                <ListItem disablePadding>
-                  <ListItemButton>
-                    <ListItemIcon>
-                      <SvgIcon component={option.icon} inheritViewBox />
-                    </ListItemIcon>
-                    <ListItemText
-                      primary={option.title}
-                      primaryTypographyProps={{ color: 'white' }}
-                    />
-                  </ListItemButton>
-                </ListItem>
-              </Link>
-            ))}
+            {isPublicSession && (
+              <>
+                <MenuOption
+                  href={menuOptions[0].href}
+                  title={menuOptions[0].title}
+                  icon={menuOptions[0].icon}
+                />
+              </>
+            )}
+            {isImplementerSession && (
+              <>
+                <MenuOption
+                  href={menuOptions[0].href}
+                  title={menuOptions[0].title}
+                  icon={menuOptions[0].icon}
+                />
+                <MenuOption
+                  href={menuOptions[1].href}
+                  title={menuOptions[1].title}
+                  icon={menuOptions[1].icon}
+                />
+              </>
+            )}
+            {isCuratorSession && (
+              <>
+                <MenuOption
+                  href={menuOptions[0].href}
+                  title={menuOptions[0].title}
+                  icon={menuOptions[0].icon}
+                />
+                <MenuOption
+                  href={menuOptions[2].href}
+                  title={menuOptions[2].title}
+                  icon={menuOptions[2].icon}
+                />
+              </>
+            )}
           </List>
         </nav>
       </div>
