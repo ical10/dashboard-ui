@@ -12,6 +12,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const { payload, address } = JSON.parse(body);
 
+  console.log({ payload, authorization, address });
+
   const { data } = await DashboardAPI().request({
     url: '/create',
     method: 'POST',

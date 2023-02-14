@@ -9,8 +9,15 @@ import { ReportForm, OpenSnackbarProps } from 'src/components/ReportForm';
 import Statistics from 'src/components/ReportStatistics';
 import Sidebar from 'src/components/Sidebar';
 import WalletModal from 'src/components/connect/WalletModal';
+import { getASubmission } from 'src/lib/api/queries';
+import { UrlDataProps } from 'src/types/submission';
 
-const ImplementersDetail = () => {
+type ImplementersDetailProps = {
+  urlData: UrlDataProps;
+};
+
+const ImplementersDetail = (props: ImplementersDetailProps) => {
+  const { urlData } = props;
   const { data: session, status } = useSession();
 
   const [snackbar, setSnackbar] = useState<OpenSnackbarProps | null>(null);
@@ -47,7 +54,7 @@ const ImplementersDetail = () => {
               <h1>Implementers Detail Page</h1>
               <h3 className="mt-12">Submit your details</h3>
             </div>
-            <ReportForm onOpenSnackbar={handleOpenSnackbar} />
+            <ReportForm onOpenSnackbar={handleOpenSnackbar} editedUrlData={urlData} />
           </div>
           <div className="flex justify-center mt-6 mx-6">
             <Statistics />
@@ -77,18 +84,14 @@ const ImplementersDetail = () => {
 };
 
 export const getServerSideProps: GetServerSideProps = async context => {
-  const id = context.query['id'];
+  const id = context.query['submission_id'] as string;
 
-  // In this example, we might call a database or an API with given ID from the query parameters
-  // I'll call a fake API to get the players name from a fake database
-  const res = await fetch(`https://baseball.com/api/getTeamFromPlayerId/${id}`);
-  const team = await res;
+  const urlData = await getASubmission(id);
 
   // Return the ID to the component
   return {
     props: {
-      id,
-      name,
+      urlData,
     },
   };
 };

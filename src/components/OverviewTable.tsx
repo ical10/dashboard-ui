@@ -9,6 +9,7 @@ import {
   Skeleton,
   Box,
   IconButton,
+  Button,
   Paper,
   Table,
   TableBody,
@@ -25,9 +26,11 @@ import { useEffect, useState } from 'react';
 
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 import PropTypes from 'prop-types';
 import { ROLE_ID } from 'src/types/db';
+import { SubmissionDataProps } from 'src/types/submission';
 
 interface TablePaginationActionsProps {
   count: number;
@@ -93,39 +96,23 @@ TablePaginationActions.propTypes = {
   rowsPerPage: PropTypes.number.isRequired,
 };
 
-type UrlDataProps = {
-  createdAt: string;
-  domainname: string;
-  eligible: null | boolean;
-  exists_in_db: null | boolean;
-  exists_in_repo: null | boolean;
-  id: number;
-  pr_submitted: null | boolean;
-  proof: null | string;
-  pull_request_id: null | number;
-  status_id: number;
-  submitted_by: number;
-  takendown: null | boolean;
-  updatedAt: string;
-  usid: string;
-};
-
-type UserDataProps = {
-  createdAt: string;
-  id: number;
-  identifier: string;
-  public_address: string;
-  status_id: number;
-  updatedAt: string;
-};
-
-type SubmissionDataProps = {
-  url_data: UrlDataProps;
-  user_data: UserDataProps;
-};
-
 const OverviewTable = () => {
   const { data: session } = useSession();
+
+  const router = useRouter();
+
+  const handleEditSubmission = (id: number) => {
+    router.push(
+      {
+        pathname: '/implementers',
+        query: {
+          submission_id: id,
+        },
+      },
+      undefined,
+      { shallow: true },
+    );
+  };
 
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -308,7 +295,7 @@ const OverviewTable = () => {
                         id="link-action"
                         className="hidden group-hover:inline-block group-hover:blur-0 group-hover:border-b-0"
                       >
-                        <Link href="/implementers">Edit</Link>
+                        <Button onClick={() => handleEditSubmission(url_data.id)}>Edit</Button>
                       </TableCell>
                     ) : (
                       <TableCell id="link-action">

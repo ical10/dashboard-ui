@@ -3,7 +3,7 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import getConfig from 'next/config';
 
 import * as AuthAPI from 'src/lib/api/auth';
-import { AuthenticatedUser } from 'types';
+import { AuthenticatedUser } from 'src/types/db';
 
 const { serverRuntimeConfig } = getConfig();
 
