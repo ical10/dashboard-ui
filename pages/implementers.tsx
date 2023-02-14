@@ -2,6 +2,7 @@ import { Snackbar, Alert, AlertColor } from '@mui/material';
 
 import { useState, useCallback } from 'react';
 
+import { GetServerSideProps } from 'next';
 import { useSession } from 'next-auth/react';
 
 import { ReportForm, OpenSnackbarProps } from 'src/components/ReportForm';
@@ -73,6 +74,23 @@ const ImplementersDetail = () => {
       <WalletModal open={isOpenModal} onClose={() => setOpenModal(false)} />
     </>
   );
+};
+
+export const getServerSideProps: GetServerSideProps = async context => {
+  const id = context.query['id'];
+
+  // In this example, we might call a database or an API with given ID from the query parameters
+  // I'll call a fake API to get the players name from a fake database
+  const res = await fetch(`https://baseball.com/api/getTeamFromPlayerId/${id}`);
+  const team = await res;
+
+  // Return the ID to the component
+  return {
+    props: {
+      id,
+      name,
+    },
+  };
 };
 
 export default ImplementersDetail;

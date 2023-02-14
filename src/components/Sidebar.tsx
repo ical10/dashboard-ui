@@ -72,6 +72,7 @@ function PureSidebar({ isAuthenticated, onConnect }: PureSidebarProps) {
     },
   ];
 
+  // TODO: extract this as a utils and use it in OverviewTable to change action in link-action
   const isImplementerSession = session?.user.user_roles.some(
     role => role.role_id === ROLE_ID.Implementor,
   );
@@ -82,14 +83,12 @@ function PureSidebar({ isAuthenticated, onConnect }: PureSidebarProps) {
 
   const isPublicSession = !session;
 
-  console.log({ isCuratorSession, isImplementerSession, isPublicSession });
-
   return (
     <Box
       component="div"
       sx={{
         width: '100%',
-        height: '100vh',
+        height: 'auto',
         maxWidth: 221,
         display: 'flex',
         flexDirection: 'column',

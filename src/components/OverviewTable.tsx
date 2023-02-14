@@ -23,7 +23,11 @@ import { useTheme } from '@mui/material/styles';
 
 import { useEffect, useState } from 'react';
 
+import { useSession } from 'next-auth/react';
+import Link from 'next/link';
+
 import PropTypes from 'prop-types';
+import { ROLE_ID } from 'src/types/db';
 
 interface TablePaginationActionsProps {
   count: number;
@@ -121,6 +125,8 @@ type SubmissionDataProps = {
 };
 
 const OverviewTable = () => {
+  const { data: session } = useSession();
+
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
@@ -214,15 +220,22 @@ const OverviewTable = () => {
                 ).map(({ url_data, user_data }, i) => (
                   <TableRow
                     key={`${url_data.submitted_by}-${i}`}
+                    className="group"
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                   >
-                    <TableCell id="implementer-id" component="th" scope="row" align="left">
+                    <TableCell
+                      className="group-hover:blur-[1px]"
+                      id="implementer-id"
+                      component="th"
+                      scope="row"
+                      align="left"
+                    >
                       {user_data.identifier}
                     </TableCell>
-                    <TableCell id="date" align="left">
+                    <TableCell className="group-hover:blur-[1px]" id="date" align="left">
                       {new Date(url_data.createdAt ?? '').toLocaleDateString()}
                     </TableCell>
-                    <TableCell id="github-pr" align="left">
+                    <TableCell className="group-hover:blur-[1px]" id="github-pr" align="left">
                       {url_data.pull_request_id !== null ? (
                         <a
                           href={`https://github.com/polkadot-js/phishing/pull/${url_data.pull_request_id}`}
@@ -235,7 +248,7 @@ const OverviewTable = () => {
                         <Typography>NA</Typography>
                       )}
                     </TableCell>
-                    <TableCell id="domain-name" align="left">
+                    <TableCell className="group-hover:blur-[1px]" id="domain-name" align="left">
                       <a
                         href={isValidHttpUrl(url_data.domainname) as string}
                         target="_blank"
@@ -244,7 +257,11 @@ const OverviewTable = () => {
                         {extractDomainName(url_data.domainname)}
                       </a>
                     </TableCell>
-                    <TableCell id="urlscan-or-image-proof" align="left">
+                    <TableCell
+                      className="group-hover:blur-[1px]"
+                      id="urlscan-or-image-proof"
+                      align="left"
+                    >
                       {url_data.proof !== null ? (
                         <a href={url_data.proof} target="_blank" rel="noreferrer noopener">
                           Image / urlscan proof
@@ -253,10 +270,18 @@ const OverviewTable = () => {
                         <Typography>NA</Typography>
                       )}
                     </TableCell>
-                    <TableCell id="taken-down-status" align="center">
+                    <TableCell
+                      className="group-hover:blur-[1px]"
+                      id="taken-down-status"
+                      align="center"
+                    >
                       {url_data.status_id ? 'Yes' : 'No'}
                     </TableCell>
-                    <TableCell id="confirmed-takendown" align="center">
+                    <TableCell
+                      className="group-hover:blur-[1px]"
+                      id="confirmed-takendown"
+                      align="center"
+                    >
                       {url_data.eligible && url_data.takendown ? (
                         <span role="img" aria-label="checked">
                           ✅
@@ -267,13 +292,29 @@ const OverviewTable = () => {
                         </span>
                       )}
                     </TableCell>
-                    <TableCell id="eligible-submissions" align="center">
+                    <TableCell
+                      className="group-hover:blur-[1px]"
+                      id="eligible-submissions"
+                      align="center"
+                    >
                       {url_data.pr_submitted === null
                         ? 'NA'
                         : url_data.pr_submitted === true
                         ? 'Yes'
                         : 'No'}
                     </TableCell>
+                    {session?.user.user_roles[0].role_id === ROLE_ID.Implementor ? (
+                      <TableCell
+                        id="link-action"
+                        className="hidden group-hover:inline-block group-hover:blur-0 group-hover:border-b-0"
+                      >
+                        <Link href="/implementers">Edit</Link>
+                      </TableCell>
+                    ) : (
+                      <TableCell id="link-action">
+                        <Link href="#">View</Link>
+                      </TableCell>
+                    )}
                   </TableRow>
                 ))
               : null}
