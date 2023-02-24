@@ -19,7 +19,7 @@ const Dashboard = () => {
 
   return (
     <>
-      <div className="flex flex-row">
+      <div className="flex flex-row min-h-screen">
         <Sidebar isAuthenticated={isAuthenticated} onConnect={handleConnect} />
         <div className="flex flex-col mt-6 mx-6">
           <div className="mb-4">
