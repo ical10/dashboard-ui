@@ -5,7 +5,6 @@ import { useState, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 
 import { ReportForm, OpenSnackbarProps } from 'src/components/ReportForm';
-import Statistics from 'src/components/ReportStatistics';
 import Sidebar from 'src/components/Sidebar';
 import WalletModal from 'src/components/connect/WalletModal';
 
@@ -40,17 +39,19 @@ const ImplementersDetail = () => {
     <>
       <div className="flex flex-row min-h-screen">
         <Sidebar isAuthenticated={isAuthenticated} onConnect={handleConnect} />
-        <div className="grid grid-cols-2">
-          <div className="flex flex-col mt-6 mx-6">
+        <div className="flex flex-row justify-center items-start mx-auto w-[720px]">
+          <div className="flex flex-col mt-6 mx-6 w-full">
             <div className="mb-12">
               <h1>Implementers Detail Page</h1>
               <h3 className="mt-12">Submit your details</h3>
             </div>
             <ReportForm onOpenSnackbar={handleOpenSnackbar} />
           </div>
-          <div className="flex justify-center mt-6 mx-6">
-            <Statistics />
-          </div>
+          {
+            // <div className="flex justify-center mt-6 mx-6">
+            //   <Statistics />
+            // </div>
+          }
         </div>
 
         <Snackbar

@@ -6,7 +6,6 @@ import { GetServerSideProps } from 'next';
 import { useSession } from 'next-auth/react';
 
 import { EditForm, OpenSnackbarProps } from 'src/components/EditForm';
-import Statistics from 'src/components/ReportStatistics';
 import Sidebar from 'src/components/Sidebar';
 import WalletModal from 'src/components/connect/WalletModal';
 import { getASubmission } from 'src/lib/api/queries';
@@ -48,17 +47,19 @@ const EditSubmissionPage = (props: EditSubmissionPageProps) => {
     <>
       <div className="flex flex-row min-h-screen">
         <Sidebar isAuthenticated={isAuthenticated} onConnect={handleConnect} />
-        <div className="grid grid-cols-2">
-          <div className="flex flex-col mt-6 mx-6">
+        <div className="flex flex-row justify-center items-start mx-auto w-[720px]">
+          <div className="flex flex-col mt-6 mx-6 w-full">
             <div className="mb-12">
               <h1>Implementers Detail Page</h1>
               <h3 className="mt-12">Edit your submission</h3>
             </div>
             <EditForm onOpenSnackbar={handleOpenSnackbar} editedUrlData={urlData} />
           </div>
-          <div className="flex justify-center mt-6 mx-6">
-            <Statistics />
-          </div>
+          {
+            // <div className="flex justify-center mt-6 mx-6">
+            //   <Statistics />
+            // </div>
+          }
         </div>
 
         <Snackbar
