@@ -9,7 +9,6 @@ import {
   Skeleton,
   Box,
   IconButton,
-  Button,
   Paper,
   Table,
   TableBody,
@@ -25,9 +24,9 @@ import { useTheme } from '@mui/material/styles';
 import { useEffect, useState } from 'react';
 
 import { useSession } from 'next-auth/react';
-import Link from 'next/link';
 import { useRouter } from 'next/router';
 
+import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import { ROLE_ID } from 'src/types/db';
 import { SubmissionDataProps } from 'src/types/submission';
@@ -96,6 +95,10 @@ TablePaginationActions.propTypes = {
   rowsPerPage: PropTypes.number.isRequired,
 };
 
+const twStyles = {
+  groupBlurOnHover: 'group-hover:blur-[1px]',
+};
+
 const OverviewTable = () => {
   const { data: session } = useSession();
 
@@ -104,7 +107,7 @@ const OverviewTable = () => {
   const handleEditSubmission = (id: number) => {
     router.push(
       {
-        pathname: '/implementers',
+        pathname: `/implementers/edit/`,
         query: {
           submission_id: id,
         },
@@ -181,6 +184,8 @@ const OverviewTable = () => {
     }
   };
 
+  const isUser = Boolean(session?.user.user_roles);
+
   if (loadingSubmissions) return <Skeleton variant="rounded" width={900} height={400} />;
 
   return (
@@ -211,7 +216,7 @@ const OverviewTable = () => {
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                   >
                     <TableCell
-                      className="group-hover:blur-[1px]"
+                      className={clsx('', isUser && twStyles.groupBlurOnHover)}
                       id="implementer-id"
                       component="th"
                       scope="row"
@@ -219,10 +224,18 @@ const OverviewTable = () => {
                     >
                       {user_data.identifier}
                     </TableCell>
-                    <TableCell className="group-hover:blur-[1px]" id="date" align="left">
+                    <TableCell
+                      className={clsx('', isUser && twStyles.groupBlurOnHover)}
+                      id="date"
+                      align="left"
+                    >
                       {new Date(url_data.createdAt ?? '').toLocaleDateString()}
                     </TableCell>
-                    <TableCell className="group-hover:blur-[1px]" id="github-pr" align="left">
+                    <TableCell
+                      className={clsx('', isUser && twStyles.groupBlurOnHover)}
+                      id="github-pr"
+                      align="left"
+                    >
                       {url_data.pull_request_id !== null ? (
                         <a
                           href={`https://github.com/polkadot-js/phishing/pull/${url_data.pull_request_id}`}
@@ -235,7 +248,11 @@ const OverviewTable = () => {
                         <Typography>NA</Typography>
                       )}
                     </TableCell>
-                    <TableCell className="group-hover:blur-[1px]" id="domain-name" align="left">
+                    <TableCell
+                      className={clsx('', isUser && twStyles.groupBlurOnHover)}
+                      id="domain-name"
+                      align="left"
+                    >
                       <a
                         href={isValidHttpUrl(url_data.domainname) as string}
                         target="_blank"
@@ -245,7 +262,7 @@ const OverviewTable = () => {
                       </a>
                     </TableCell>
                     <TableCell
-                      className="group-hover:blur-[1px]"
+                      className={clsx('', isUser && twStyles.groupBlurOnHover)}
                       id="urlscan-or-image-proof"
                       align="left"
                     >
@@ -258,14 +275,14 @@ const OverviewTable = () => {
                       )}
                     </TableCell>
                     <TableCell
-                      className="group-hover:blur-[1px]"
+                      className={clsx('', isUser && twStyles.groupBlurOnHover)}
                       id="taken-down-status"
                       align="center"
                     >
                       {url_data.status_id ? 'Yes' : 'No'}
                     </TableCell>
                     <TableCell
-                      className="group-hover:blur-[1px]"
+                      className={clsx('', isUser && twStyles.groupBlurOnHover)}
                       id="confirmed-takendown"
                       align="center"
                     >
@@ -280,7 +297,7 @@ const OverviewTable = () => {
                       )}
                     </TableCell>
                     <TableCell
-                      className="group-hover:blur-[1px]"
+                      className={clsx('', isUser && twStyles.groupBlurOnHover)}
                       id="eligible-submissions"
                       align="center"
                     >
@@ -290,18 +307,16 @@ const OverviewTable = () => {
                         ? 'Yes'
                         : 'No'}
                     </TableCell>
-                    {session?.user.user_roles[0].role_id === ROLE_ID.Implementor ? (
-                      <TableCell
-                        id="link-action"
-                        className="hidden group-hover:inline-block group-hover:blur-0 group-hover:border-b-0"
-                      >
-                        <Button onClick={() => handleEditSubmission(url_data.id)}>Edit</Button>
-                      </TableCell>
-                    ) : (
-                      <TableCell id="link-action">
-                        <Link href="#">View</Link>
-                      </TableCell>
-                    )}
+                    {session?.user.user_roles.some(e => e.role_id === ROLE_ID.Implementor) &&
+                      (session?.user.id as unknown as number) === url_data.submitted_by && (
+                        <TableCell
+                          id="link-action"
+                          className="hidden group-hover:inline-block group-hover:blur-0 group-hover:border-b-0"
+                        >
+                          <button onClick={() => handleEditSubmission(url_data.id)}>Edit</button>
+                        </TableCell>
+                      )}
+                    {!session?.user && <></>}
                   </TableRow>
                 ))
               : null}
