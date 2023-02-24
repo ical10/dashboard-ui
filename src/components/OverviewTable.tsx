@@ -216,7 +216,7 @@ const OverviewTable = () => {
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                   >
                     <TableCell
-                      className={clsx('', isUser && twStyles.groupBlurOnHover)}
+                      className={clsx(isUser && twStyles.groupBlurOnHover)}
                       id="implementer-id"
                       component="th"
                       scope="row"
@@ -225,14 +225,14 @@ const OverviewTable = () => {
                       {user_data.identifier}
                     </TableCell>
                     <TableCell
-                      className={clsx('', isUser && twStyles.groupBlurOnHover)}
+                      className={clsx(isUser && twStyles.groupBlurOnHover)}
                       id="date"
                       align="left"
                     >
                       {new Date(url_data.createdAt ?? '').toLocaleDateString()}
                     </TableCell>
                     <TableCell
-                      className={clsx('', isUser && twStyles.groupBlurOnHover)}
+                      className={clsx(isUser && twStyles.groupBlurOnHover)}
                       id="github-pr"
                       align="left"
                     >
@@ -249,7 +249,7 @@ const OverviewTable = () => {
                       )}
                     </TableCell>
                     <TableCell
-                      className={clsx('', isUser && twStyles.groupBlurOnHover)}
+                      className={clsx(isUser && twStyles.groupBlurOnHover)}
                       id="domain-name"
                       align="left"
                     >
@@ -262,7 +262,7 @@ const OverviewTable = () => {
                       </a>
                     </TableCell>
                     <TableCell
-                      className={clsx('', isUser && twStyles.groupBlurOnHover)}
+                      className={clsx(isUser && twStyles.groupBlurOnHover)}
                       id="urlscan-or-image-proof"
                       align="left"
                     >
@@ -275,14 +275,14 @@ const OverviewTable = () => {
                       )}
                     </TableCell>
                     <TableCell
-                      className={clsx('', isUser && twStyles.groupBlurOnHover)}
+                      className={clsx(isUser && twStyles.groupBlurOnHover)}
                       id="taken-down-status"
                       align="center"
                     >
                       {url_data.status_id ? 'Yes' : 'No'}
                     </TableCell>
                     <TableCell
-                      className={clsx('', isUser && twStyles.groupBlurOnHover)}
+                      className={clsx(isUser && twStyles.groupBlurOnHover)}
                       id="confirmed-takendown"
                       align="center"
                     >
@@ -297,7 +297,7 @@ const OverviewTable = () => {
                       )}
                     </TableCell>
                     <TableCell
-                      className={clsx('', isUser && twStyles.groupBlurOnHover)}
+                      className={clsx(isUser && twStyles.groupBlurOnHover)}
                       id="eligible-submissions"
                       align="center"
                     >
