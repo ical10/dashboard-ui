@@ -44,7 +44,6 @@ type ReportFormProps = {
   editedUrlData?: UrlDataProps;
 };
 
-//TODO: should create a different form for editing submissions, add ?Edit params
 export const ReportForm = ({ onOpenSnackbar, editedUrlData }: ReportFormProps) => {
   const { control, handleSubmit } = useForm<FormData>({
     defaultValues: {
