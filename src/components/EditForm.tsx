@@ -75,8 +75,6 @@ export const EditForm = ({ onOpenSnackbar, editedUrlData }: EditFormProps) => {
 
         const id = router.query['submission_id'];
 
-        console.log({ fullSubmissionPayload });
-
         const resp = await fetch(`/api/implementers/edit/${id}`, {
           method: 'POST',
           body: JSON.stringify(fullSubmissionPayload),
@@ -123,7 +121,7 @@ export const EditForm = ({ onOpenSnackbar, editedUrlData }: EditFormProps) => {
         '& .MuiTextField-root': { m: 1 },
       }}
       noValidate
-      onSubmit={e => handleAsyncSubmit(e)}
+      onSubmit={(e: React.FormEvent<HTMLFormElement>) => handleAsyncSubmit(e)}
       autoComplete="off"
     >
       <div className="flex flex-col gap-3">
