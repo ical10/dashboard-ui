@@ -279,7 +279,7 @@ const OverviewTable = () => {
                       id="taken-down-status"
                       align="center"
                     >
-                      {url_data.status_id ? 'Yes' : 'No'}
+                      {url_data.takendown ? 'Yes' : 'No'}
                     </TableCell>
                     <TableCell
                       className={clsx(isUser && twStyles.groupBlurOnHover)}
