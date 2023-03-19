@@ -7,13 +7,15 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
   if (!req.body || !req.headers) throw new Error('Request malformed!');
 
+  const query = req.query;
+  const { id } = query;
   const { body, headers } = req;
   const { authorization } = headers;
 
   const { payload, address } = JSON.parse(body);
 
   const { data } = await DashboardAPI().request({
-    url: '/create',
+    url: `/update/${id}`,
     method: 'POST',
     data: payload,
     headers: {

@@ -1,16 +1,11 @@
 import NextAuth from 'next-auth';
-import type { User } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import getConfig from 'next/config';
 
 import * as AuthAPI from 'src/lib/api/auth';
+import { AuthenticatedUser } from 'src/types/db';
 
 const { serverRuntimeConfig } = getConfig();
-
-interface ExtendedUser extends User {
-  address: string;
-  sig: string;
-}
 
 export default NextAuth({
   providers: [
@@ -31,14 +26,19 @@ export default NextAuth({
 
         const { signature, publicAddress } = credentials;
         try {
-          const { status } = await AuthAPI.login({
+          const { status, data } = await AuthAPI.login({
             signedMessage: signature,
             userAddress: publicAddress,
           });
 
-          const user = {
+          const { id, identifier, user_roles } = data;
+
+          const user: AuthenticatedUser = {
+            id,
             address: publicAddress,
             sig: signature,
+            identifier,
+            user_roles,
           };
 
           if (status) {
@@ -54,7 +54,7 @@ export default NextAuth({
   ],
   callbacks: {
     async session({ session, token }) {
-      session.user = token.user as unknown as ExtendedUser;
+      session.user = token.user as unknown as AuthenticatedUser;
       return session;
     },
     async jwt({ token, user }) {

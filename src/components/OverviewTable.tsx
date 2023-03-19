@@ -3,6 +3,7 @@ import {
   KeyboardArrowLeft,
   KeyboardArrowRight,
   LastPage as LastPageIcon,
+  ChatBubble as ChatBubbleIcon,
 } from '@mui/icons-material';
 import {
   Typography,
@@ -23,18 +24,26 @@ import { useTheme } from '@mui/material/styles';
 
 import { useEffect, useState } from 'react';
 
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/router';
+
+import CommentDialog from './CommentDialog';
+
+import clsx from 'clsx';
 import PropTypes from 'prop-types';
+import { ROLE_ID } from 'src/types/db';
+import { CommentDataProps, SubmissionDataProps } from 'src/types/submission';
 
 interface TablePaginationActionsProps {
   count: number;
   page: number;
-  rowsPerPage: number;
+  rowsPerPage?: number;
   onPageChange: (event: React.MouseEvent<HTMLButtonElement>, newPage: number) => void;
 }
 
 function TablePaginationActions(props: TablePaginationActionsProps) {
   const theme = useTheme();
-  const { count, page, rowsPerPage, onPageChange } = props;
+  const { count, page, rowsPerPage = 10, onPageChange } = props;
 
   const handleFirstPageButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     onPageChange(event, 0);
@@ -89,43 +98,37 @@ TablePaginationActions.propTypes = {
   rowsPerPage: PropTypes.number.isRequired,
 };
 
-type UrlDataProps = {
-  createdAt: string;
-  domainname: string;
-  eligible: null | boolean;
-  exists_in_db: null | boolean;
-  exists_in_repo: null | boolean;
-  id: number;
-  pr_submitted: null | boolean;
-  proof: null | string;
-  pull_request_id: null | number;
-  status_id: number;
-  submitted_by: number;
-  takendown: null | boolean;
-  updatedAt: string;
-  usid: string;
-};
-
-type UserDataProps = {
-  createdAt: string;
-  id: number;
-  identifier: string;
-  public_address: string;
-  status_id: number;
-  updatedAt: string;
-};
-
-type SubmissionDataProps = {
-  url_data: UrlDataProps;
-  user_data: UserDataProps;
+const twStyles = {
+  groupBlurOnHover: 'group-hover:blur-[1px]',
 };
 
 const OverviewTable = () => {
+  const { data: session } = useSession();
+
+  const router = useRouter();
+
+  const handleEditSubmission = (id: number) => {
+    router.push(
+      {
+        pathname: `/implementers/edit/`,
+        query: {
+          submission_id: id,
+        },
+      },
+      undefined,
+      { shallow: true },
+    );
+  };
+
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const [submissions, setSubmissions] = useState<SubmissionDataProps[] | null>(null);
   const [loadingSubmissions, setLoadingSubmissions] = useState(false);
+
+  const [openCommentDialog, setOpenCommentDialog] = useState(false);
+  const [comments, setComments] = useState<CommentDataProps[]>([]);
+  const [referencedUrl, setReferencedUrl] = useState('');
 
   useEffect(() => {
     const getAllSubmissions = async () => {
@@ -168,6 +171,16 @@ const OverviewTable = () => {
     setPage(0);
   };
 
+  const handleOpenCommentDialog = (comments: CommentDataProps[], referencedUrl: string) => {
+    setOpenCommentDialog(true);
+    setComments(comments);
+    setReferencedUrl(referencedUrl);
+  };
+
+  const handleCloseCommentDialog = () => {
+    setOpenCommentDialog(false);
+  };
+
   const isValidHttpUrl = (urlString: string) => {
     try {
       const url = new URL(urlString);
@@ -188,6 +201,8 @@ const OverviewTable = () => {
     }
   };
 
+  const isUser = Boolean(session?.user.user_roles);
+
   if (loadingSubmissions) return <Skeleton variant="rounded" width={900} height={400} />;
 
   return (
@@ -196,7 +211,7 @@ const OverviewTable = () => {
         <Table sx={{ minWidth: 650, width: '100%' }} aria-label="simple table">
           <TableHead>
             <TableRow>
-              <TableCell align="center">Implementers</TableCell>
+              <TableCell align="center">Implementer</TableCell>
               <TableCell align="center">Date</TableCell>
               <TableCell align="center">GitHub Report</TableCell>
               <TableCell align="center">Domain</TableCell>
@@ -204,6 +219,7 @@ const OverviewTable = () => {
               <TableCell align="center">Taken Down</TableCell>
               <TableCell align="center">Confirmed</TableCell>
               <TableCell align="center">Eligibility</TableCell>
+              <TableCell align="center">Comment</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -211,18 +227,33 @@ const OverviewTable = () => {
               ? (rowsPerPage > 0
                   ? submissions.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   : submissions
-                ).map(({ url_data, user_data }, i) => (
+                ).map(({ comments, url_data, user_data }, i) => (
                   <TableRow
                     key={`${url_data.submitted_by}-${i}`}
+                    className="group"
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                   >
-                    <TableCell id="implementer-id" component="th" scope="row" align="left">
+                    <TableCell
+                      className={clsx(isUser && twStyles.groupBlurOnHover)}
+                      id="implementer-id"
+                      component="th"
+                      scope="row"
+                      align="left"
+                    >
                       {user_data.identifier}
                     </TableCell>
-                    <TableCell id="date" align="left">
+                    <TableCell
+                      className={clsx(isUser && twStyles.groupBlurOnHover)}
+                      id="date"
+                      align="left"
+                    >
                       {new Date(url_data.createdAt ?? '').toLocaleDateString()}
                     </TableCell>
-                    <TableCell id="github-pr" align="left">
+                    <TableCell
+                      className={clsx(isUser && twStyles.groupBlurOnHover)}
+                      id="github-pr"
+                      align="left"
+                    >
                       {url_data.pull_request_id !== null ? (
                         <a
                           href={`https://github.com/polkadot-js/phishing/pull/${url_data.pull_request_id}`}
@@ -235,7 +266,11 @@ const OverviewTable = () => {
                         <Typography>NA</Typography>
                       )}
                     </TableCell>
-                    <TableCell id="domain-name" align="left">
+                    <TableCell
+                      className={clsx(isUser && twStyles.groupBlurOnHover)}
+                      id="domain-name"
+                      align="left"
+                    >
                       <a
                         href={isValidHttpUrl(url_data.domainname) as string}
                         target="_blank"
@@ -244,7 +279,11 @@ const OverviewTable = () => {
                         {extractDomainName(url_data.domainname)}
                       </a>
                     </TableCell>
-                    <TableCell id="urlscan-or-image-proof" align="left">
+                    <TableCell
+                      className={clsx(isUser && twStyles.groupBlurOnHover)}
+                      id="urlscan-or-image-proof"
+                      align="left"
+                    >
                       {url_data.proof !== null ? (
                         <a href={url_data.proof} target="_blank" rel="noreferrer noopener">
                           Image / urlscan proof
@@ -253,11 +292,19 @@ const OverviewTable = () => {
                         <Typography>NA</Typography>
                       )}
                     </TableCell>
-                    <TableCell id="taken-down-status" align="center">
-                      {url_data.status_id ? 'Yes' : 'No'}
+                    <TableCell
+                      className={clsx(isUser && twStyles.groupBlurOnHover)}
+                      id="taken-down-status"
+                      align="center"
+                    >
+                      {url_data.takendown ? 'Yes' : 'No'}
                     </TableCell>
-                    <TableCell id="confirmed-takendown" align="center">
-                      {url_data.eligible && url_data.takendown ? (
+                    <TableCell
+                      className={clsx(isUser && twStyles.groupBlurOnHover)}
+                      id="confirmed-takendown"
+                      align="center"
+                    >
+                      {url_data.confirmed_takendown ? (
                         <span role="img" aria-label="checked">
                           ✅
                         </span>
@@ -267,13 +314,41 @@ const OverviewTable = () => {
                         </span>
                       )}
                     </TableCell>
-                    <TableCell id="eligible-submissions" align="center">
-                      {url_data.pr_submitted === null
+                    <TableCell
+                      className={clsx(isUser && twStyles.groupBlurOnHover)}
+                      id="eligible-submissions"
+                      align="center"
+                    >
+                      {url_data.eligible === null
                         ? 'NA'
-                        : url_data.pr_submitted === true
+                        : url_data.eligible === true
                         ? 'Yes'
                         : 'No'}
                     </TableCell>
+                    <TableCell
+                      className={clsx(isUser && twStyles.groupBlurOnHover)}
+                      id="comments"
+                      align="center"
+                    >
+                      <IconButton
+                        disabled={comments === null || comments.length === 0 ? true : false}
+                        color="primary"
+                        aria-label="open comment dialog"
+                        onClick={() => handleOpenCommentDialog(comments, url_data.domainname)}
+                      >
+                        <ChatBubbleIcon />
+                      </IconButton>
+                    </TableCell>
+                    {session?.user.user_roles.some(e => e.role_id === ROLE_ID.Implementor) &&
+                      (session?.user.id as unknown as number) === url_data.submitted_by && (
+                        <TableCell
+                          id="link-action"
+                          className="hidden group-hover:inline-block group-hover:blur-0 group-hover:border-b-0"
+                        >
+                          <button onClick={() => handleEditSubmission(url_data.id)}>Edit</button>
+                        </TableCell>
+                      )}
+                    {!session?.user && <></>}
                   </TableRow>
                 ))
               : null}
@@ -306,6 +381,13 @@ const OverviewTable = () => {
           </TableFooter>
         </Table>
       </TableContainer>
+
+      <CommentDialog
+        comments={comments}
+        referencedUrl={referencedUrl}
+        open={openCommentDialog}
+        onClose={handleCloseCommentDialog}
+      />
     </>
   );
 };

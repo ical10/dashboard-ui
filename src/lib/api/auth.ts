@@ -5,9 +5,9 @@ type LoginProps = {
   userAddress: string;
 };
 
-export const login = async ({signedMessage, userAddress}: LoginProps) => {
+export const login = async ({ signedMessage, userAddress }: LoginProps) => {
   try {
-    const {data} = await DashboardAPI().request({
+    const { data } = await DashboardAPI().request({
       url: `/auth`,
       method: 'GET',
       headers: {
@@ -18,6 +18,6 @@ export const login = async ({signedMessage, userAddress}: LoginProps) => {
 
     return data;
   } catch (error) {
-    console.log({error});
+    console.log({ error });
   }
 };

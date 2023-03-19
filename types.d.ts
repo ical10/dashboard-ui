@@ -1,11 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import type { User } from 'next-auth';
+import { AuthenticatedUser } from 'src/types/db';
 
 declare module 'next-auth' {
   interface Session {
-    user: User & {
-      address: string;
-      sig: string;
-    };
+    user: AuthenticatedUser;
   }
 }

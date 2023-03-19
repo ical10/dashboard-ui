@@ -18,6 +18,8 @@ import { useForm, Controller, SubmitHandler } from 'react-hook-form';
 
 import { useSession } from 'next-auth/react';
 
+import { UrlDataProps } from 'src/types/submission';
+
 type FormData = {
   domains: string[];
   isTakenDowns: boolean[];
@@ -39,9 +41,10 @@ export type OpenSnackbarProps = {
 
 type ReportFormProps = {
   onOpenSnackbar?: (props: OpenSnackbarProps) => void;
+  editedUrlData?: UrlDataProps;
 };
 
-export const ReportForm = ({ onOpenSnackbar }: ReportFormProps) => {
+export const ReportForm = ({ onOpenSnackbar, editedUrlData }: ReportFormProps) => {
   const { control, handleSubmit } = useForm<FormData>({
     defaultValues: {
       implementer: '',
@@ -62,7 +65,7 @@ export const ReportForm = ({ onOpenSnackbar }: ReportFormProps) => {
         return {
           domainname: x ?? '',
           isTakendown: isTakenDowns[i] ?? false,
-          screenshot: screenshotUrls[i] ?? '',
+          screenshot: !screenshotUrls ? urls[0] : screenshotUrls[i] ?? '',
         };
       });
 
@@ -81,11 +84,28 @@ export const ReportForm = ({ onOpenSnackbar }: ReportFormProps) => {
     }
   }, [domains]);
 
-  const [rawScreenshotUrls, setRawScreenshotUrls] = useState('');
+  const [rawScreenshotUrls, setRawScreenshotUrls] = useState<string | null>('');
   const [urls, setUrls] = useState<string[] | []>([]);
   const [submissionPayload, setSubmissionPayload] = useState<SubmissionAPIPayload[] | null>(null);
 
   const [sendingSubmission, setSendingSubmission] = useState(false);
+
+  useEffect(() => {
+    if (editedUrlData) {
+      setDomains([...domains, editedUrlData.domainname]);
+      if (!editedUrlData.proof) {
+        return;
+      }
+      setRawScreenshotUrls(editedUrlData.proof);
+      //TODO: extract this to string utils
+      const formatted = editedUrlData.proof
+        .split(',')
+        .filter(Boolean)
+        .map(element => element.trim());
+
+      setUrls(formatted);
+    }
+  }, [editedUrlData]);
 
   const handleAsyncSubmit = async (submissionPayload: SubmissionAPIPayload[]) => {
     setSendingSubmission(true);
@@ -145,7 +165,7 @@ export const ReportForm = ({ onOpenSnackbar }: ReportFormProps) => {
 
   const isImplementerError = !implementer;
 
-  const isFormInvalid = isDomainError || isUrlError;
+  const isFormInvalid = isDomainError || isUrlError || isImplementerError;
 
   return (
     <Box
@@ -194,6 +214,7 @@ export const ReportForm = ({ onOpenSnackbar }: ReportFormProps) => {
           render={({ field: { onChange } }) => (
             <TextField
               required
+              value={domains}
               error={isDomainError}
               id="outlined-required"
               label="Multiline domains, e.g. https://scam.site/wallets, https://scam.xyz/en"

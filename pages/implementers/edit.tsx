@@ -2,14 +2,21 @@ import { Snackbar, Alert, AlertColor } from '@mui/material';
 
 import { useState, useCallback } from 'react';
 
+import { GetServerSideProps } from 'next';
 import { useSession } from 'next-auth/react';
 
-import { ReportForm, OpenSnackbarProps } from 'src/components/ReportForm';
-import Statistics from 'src/components/ReportStatistics';
+import { EditForm, OpenSnackbarProps } from 'src/components/EditForm';
 import Sidebar from 'src/components/Sidebar';
 import WalletModal from 'src/components/connect/WalletModal';
+import { getASubmission } from 'src/lib/api/queries';
+import { UrlDataProps } from 'src/types/submission';
 
-const ImplementersDetail = () => {
+type EditSubmissionPageProps = {
+  urlData: UrlDataProps;
+};
+
+const EditSubmissionPage = (props: EditSubmissionPageProps) => {
+  const { urlData } = props;
   const { data: session, status } = useSession();
 
   const [snackbar, setSnackbar] = useState<OpenSnackbarProps | null>(null);
@@ -38,19 +45,21 @@ const ImplementersDetail = () => {
 
   return (
     <>
-      <div className="flex flex-row">
+      <div className="flex flex-row min-h-screen">
         <Sidebar isAuthenticated={isAuthenticated} onConnect={handleConnect} />
-        <div className="grid grid-cols-2">
-          <div className="flex flex-col mt-6 mx-6">
+        <div className="flex flex-row justify-center items-start mx-auto w-[720px]">
+          <div className="flex flex-col mt-6 mx-6 w-full">
             <div className="mb-12">
               <h1>Implementers Detail Page</h1>
-              <h3 className="mt-12">Submit your details</h3>
+              <h3 className="mt-12">Edit your submission</h3>
             </div>
-            <ReportForm onOpenSnackbar={handleOpenSnackbar} />
+            <EditForm onOpenSnackbar={handleOpenSnackbar} editedUrlData={urlData} />
           </div>
-          <div className="flex justify-center mt-6 mx-6">
-            <Statistics />
-          </div>
+          {
+            // <div className="flex justify-center mt-6 mx-6">
+            //   <Statistics />
+            // </div>
+          }
         </div>
 
         <Snackbar
@@ -75,4 +84,17 @@ const ImplementersDetail = () => {
   );
 };
 
-export default ImplementersDetail;
+export const getServerSideProps: GetServerSideProps = async context => {
+  const id = context.query['submission_id'] as string;
+
+  const urlData = await getASubmission(id);
+
+  // Return the ID to the component
+  return {
+    props: {
+      urlData,
+    },
+  };
+};
+
+export default EditSubmissionPage;
