@@ -24,12 +24,12 @@ export type UrlDataProps = {
   submitted_by: number;
   confirmed_takendown: null | boolean;
   takendown: null | boolean;
-  comments: CommentDataProps[];
   updatedAt: string;
   usid: string;
 };
 
 export type SubmissionDataProps = {
+  comments: CommentDataProps[];
   url_data: UrlDataProps;
   user_data: UserDataProps;
 };

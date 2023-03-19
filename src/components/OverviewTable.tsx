@@ -3,6 +3,7 @@ import {
   KeyboardArrowLeft,
   KeyboardArrowRight,
   LastPage as LastPageIcon,
+  ChatBubble as ChatBubbleIcon,
 } from '@mui/icons-material';
 import {
   Typography,
@@ -26,10 +27,12 @@ import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 
+import CommentDialog from './CommentDialog';
+
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import { ROLE_ID } from 'src/types/db';
-import { SubmissionDataProps } from 'src/types/submission';
+import { CommentDataProps, SubmissionDataProps } from 'src/types/submission';
 
 interface TablePaginationActionsProps {
   count: number;
@@ -123,6 +126,10 @@ const OverviewTable = () => {
   const [submissions, setSubmissions] = useState<SubmissionDataProps[] | null>(null);
   const [loadingSubmissions, setLoadingSubmissions] = useState(false);
 
+  const [openCommentDialog, setOpenCommentDialog] = useState(false);
+  const [comments, setComments] = useState<CommentDataProps[]>([]);
+  const [referencedUrl, setReferencedUrl] = useState('');
+
   useEffect(() => {
     const getAllSubmissions = async () => {
       setLoadingSubmissions(true);
@@ -164,6 +171,16 @@ const OverviewTable = () => {
     setPage(0);
   };
 
+  const handleOpenCommentDialog = (comments: CommentDataProps[], referencedUrl: string) => {
+    setOpenCommentDialog(true);
+    setComments(comments);
+    setReferencedUrl(referencedUrl);
+  };
+
+  const handleCloseCommentDialog = () => {
+    setOpenCommentDialog(false);
+  };
+
   const isValidHttpUrl = (urlString: string) => {
     try {
       const url = new URL(urlString);
@@ -186,8 +203,6 @@ const OverviewTable = () => {
 
   const isUser = Boolean(session?.user.user_roles);
 
-  console.log({ submissions });
-
   if (loadingSubmissions) return <Skeleton variant="rounded" width={900} height={400} />;
 
   return (
@@ -196,7 +211,7 @@ const OverviewTable = () => {
         <Table sx={{ minWidth: 650, width: '100%' }} aria-label="simple table">
           <TableHead>
             <TableRow>
-              <TableCell align="center">Implementers</TableCell>
+              <TableCell align="center">Implementer</TableCell>
               <TableCell align="center">Date</TableCell>
               <TableCell align="center">GitHub Report</TableCell>
               <TableCell align="center">Domain</TableCell>
@@ -204,6 +219,7 @@ const OverviewTable = () => {
               <TableCell align="center">Taken Down</TableCell>
               <TableCell align="center">Confirmed</TableCell>
               <TableCell align="center">Eligibility</TableCell>
+              <TableCell align="center">Comment</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -211,7 +227,7 @@ const OverviewTable = () => {
               ? (rowsPerPage > 0
                   ? submissions.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   : submissions
-                ).map(({ url_data, user_data }, i) => (
+                ).map(({ comments, url_data, user_data }, i) => (
                   <TableRow
                     key={`${url_data.submitted_by}-${i}`}
                     className="group"
@@ -309,6 +325,20 @@ const OverviewTable = () => {
                         ? 'Yes'
                         : 'No'}
                     </TableCell>
+                    <TableCell
+                      className={clsx(isUser && twStyles.groupBlurOnHover)}
+                      id="comments"
+                      align="center"
+                    >
+                      <IconButton
+                        disabled={comments === null || comments.length === 0 ? true : false}
+                        color="primary"
+                        aria-label="open comment dialog"
+                        onClick={() => handleOpenCommentDialog(comments, url_data.domainname)}
+                      >
+                        <ChatBubbleIcon />
+                      </IconButton>
+                    </TableCell>
                     {session?.user.user_roles.some(e => e.role_id === ROLE_ID.Implementor) &&
                       (session?.user.id as unknown as number) === url_data.submitted_by && (
                         <TableCell
@@ -351,6 +381,13 @@ const OverviewTable = () => {
           </TableFooter>
         </Table>
       </TableContainer>
+
+      <CommentDialog
+        comments={comments}
+        referencedUrl={referencedUrl}
+        open={openCommentDialog}
+        onClose={handleCloseCommentDialog}
+      />
     </>
   );
 };
