@@ -186,6 +186,8 @@ const OverviewTable = () => {
 
   const isUser = Boolean(session?.user.user_roles);
 
+  console.log({ submissions });
+
   if (loadingSubmissions) return <Skeleton variant="rounded" width={900} height={400} />;
 
   return (
@@ -286,7 +288,7 @@ const OverviewTable = () => {
                       id="confirmed-takendown"
                       align="center"
                     >
-                      {url_data.eligible && url_data.takendown ? (
+                      {url_data.confirmed_takendown ? (
                         <span role="img" aria-label="checked">
                           ✅
                         </span>
@@ -301,9 +303,9 @@ const OverviewTable = () => {
                       id="eligible-submissions"
                       align="center"
                     >
-                      {url_data.pr_submitted === null
+                      {url_data.eligible === null
                         ? 'NA'
-                        : url_data.pr_submitted === true
+                        : url_data.eligible === true
                         ? 'Yes'
                         : 'No'}
                     </TableCell>

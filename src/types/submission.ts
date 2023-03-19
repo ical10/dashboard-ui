@@ -1,5 +1,15 @@
 import { UserDataProps } from './user';
 
+export type CommentDataProps = {
+  id: number;
+  url_id: number;
+  comment: string;
+  issued_by: number;
+  hide: boolean;
+  createdAt: string;
+  updatedAt: string;
+};
+
 export type UrlDataProps = {
   createdAt: string;
   domainname: string;
@@ -12,7 +22,9 @@ export type UrlDataProps = {
   pull_request_id: null | number;
   status_id: number;
   submitted_by: number;
+  confirmed_takendown: null | boolean;
   takendown: null | boolean;
+  comments: CommentDataProps[];
   updatedAt: string;
   usid: string;
 };
