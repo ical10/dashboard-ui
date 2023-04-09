@@ -53,8 +53,6 @@ export const EditForm = ({ onOpenSnackbar }: EditFormProps) => {
 
   const [sendingSubmission, setSendingSubmission] = useState(false);
 
-  console.log({ editedUrlData });
-
   useEffect(() => {
     if (editedUrlData) {
       const { url_data } = editedUrlData.data;

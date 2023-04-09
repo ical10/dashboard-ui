@@ -19,7 +19,7 @@ import React from 'react';
 
 import { signOut, useSession } from 'next-auth/react';
 import Image from 'next/image';
-import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 import { ROLE_ID } from 'src/types/db';
 
@@ -37,8 +37,14 @@ type OptionProps = {
 const MenuOption = (props: OptionProps) => {
   const { icon, href, title } = props;
 
+  const router = useRouter();
+
+  const handleNavigate = () => {
+    router.replace(router.asPath);
+  };
+
   return (
-    <Link key={href} href={href} passHref>
+    <a key={href} href={href} onClick={handleNavigate}>
       <ListItem disablePadding>
         <ListItemButton>
           <ListItemIcon>
@@ -47,7 +53,7 @@ const MenuOption = (props: OptionProps) => {
           <ListItemText primary={title} primaryTypographyProps={{ color: 'white' }} />
         </ListItemButton>
       </ListItem>
-    </Link>
+    </a>
   );
 };
 
@@ -95,7 +101,8 @@ function PureSidebar({ isAuthenticated, onConnect }: PureSidebarProps) {
         justifyContent: 'flex-start',
         background:
           'linear-gradient(177.83deg, rgba(230, 0, 122, 0.99) -5.55%, rgba(230, 0, 122, 0.99) 53.24%, rgba(96, 0, 51, 0.85) 131.15%);',
-      }}>
+      }}
+    >
       <div className="flex justify-center items-center mb-12 mt-6">
         <Image src="/icons/PolkadotWhiteIcon.svg" alt="Polkadot-logo" width={83} height={83} />
       </div>
@@ -151,7 +158,8 @@ function PureSidebar({ isAuthenticated, onConnect }: PureSidebarProps) {
                   <ListItemButton
                     onClick={() => {
                       signOut();
-                    }}>
+                    }}
+                  >
                     <ListItemIcon>
                       <SvgIcon component={LogoutIcon} inheritViewBox />
                     </ListItemIcon>
@@ -164,7 +172,8 @@ function PureSidebar({ isAuthenticated, onConnect }: PureSidebarProps) {
                     className="btn-connect px-4 py-2 flex flex-row justify-center items-center gap-2"
                     onClick={() => {
                       onConnect && onConnect();
-                    }}>
+                    }}
+                  >
                     <span>
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -172,17 +181,20 @@ function PureSidebar({ isAuthenticated, onConnect }: PureSidebarProps) {
                         height="24"
                         viewBox="0 0 24 24"
                         className="icon-svg"
-                        fill="none">
+                        fill="none"
+                      >
                         <path
                           d="M22 12v5c0 3-2 5-5 5H7c-3 0-5-2-5-5v-5c0-2.72 1.64-4.62 4.19-4.94.26-.04.53-.06.81-.06h10c.26 0 .51.01.75.05C20.33 7.35 22 9.26 22 12Z"
                           strokeWidth="1.5"
                           strokeLinecap="round"
-                          strokeLinejoin="round"></path>
+                          strokeLinejoin="round"
+                        ></path>
                         <path
                           d="M17.751 7.05c-.24-.04-.49-.05-.75-.05h-10c-.28 0-.55.02-.81.06.14-.28.34-.54.58-.78l3.25-3.26a3.525 3.525 0 0 1 4.96 0l1.75 1.77c.64.63.98 1.43 1.02 2.26ZM22 12.5h-3c-1.1 0-2 .9-2 2s.9 2 2 2h3"
                           strokeWidth="1.5"
                           strokeLinecap="round"
-                          strokeLinejoin="round"></path>
+                          strokeLinejoin="round"
+                        ></path>
                       </svg>
                     </span>
                     Connect wallet

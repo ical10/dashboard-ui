@@ -26,9 +26,11 @@ type FormData = {
   screenshotUrls: string[];
   urlscan?: string;
   implementer: string;
+  pullRequestId: string;
 };
 
 type SubmissionAPIPayload = {
+  pull_request_id: number;
   domainname: string;
   isTakendown: boolean;
   screenshot: string;
@@ -48,6 +50,7 @@ export const ReportForm = ({ onOpenSnackbar, editedUrlData }: ReportFormProps) =
   const { control, handleSubmit } = useForm<FormData>({
     defaultValues: {
       implementer: '',
+      pullRequestId: '',
       domains: [],
       isTakenDowns: [],
     },
@@ -59,10 +62,11 @@ export const ReportForm = ({ onOpenSnackbar, editedUrlData }: ReportFormProps) =
     if (event) {
       event.preventDefault();
 
-      const { domains, isTakenDowns, screenshotUrls } = data;
+      const { pullRequestId, domains, isTakenDowns, screenshotUrls } = data;
 
       const submissionPayload: SubmissionAPIPayload[] = domains.map((x, i) => {
         return {
+          pull_request_id: Number(pullRequestId) ?? '',
           domainname: x ?? '',
           isTakendown: isTakenDowns[i] ?? false,
           screenshot: !screenshotUrls ? urls[0] : screenshotUrls[i] ?? '',
@@ -86,6 +90,9 @@ export const ReportForm = ({ onOpenSnackbar, editedUrlData }: ReportFormProps) =
 
   const [rawScreenshotUrls, setRawScreenshotUrls] = useState<string | null>('');
   const [urls, setUrls] = useState<string[] | []>([]);
+
+  const [pullRequestId, setPullRequestId] = useState<string | null>(null);
+
   const [submissionPayload, setSubmissionPayload] = useState<SubmissionAPIPayload[] | null>(null);
 
   const [sendingSubmission, setSendingSubmission] = useState(false);
@@ -154,6 +161,8 @@ export const ReportForm = ({ onOpenSnackbar, editedUrlData }: ReportFormProps) =
     if (submissionPayload) handleAsyncSubmit(submissionPayload);
   }, [submissionPayload]);
 
+  const isPRIdError = Boolean(pullRequestId !== null && pullRequestId.length === 0);
+
   const isDomainError = Boolean(
     domains.length === 0 ||
       (domains.length > 0 && urls.length > 0 && domains.length !== urls.length),
@@ -207,6 +216,27 @@ export const ReportForm = ({ onOpenSnackbar, editedUrlData }: ReportFormProps) =
             {isImplementerError ? 'Please select the implementer!' : ''}
           </FormHelperText>
         </FormControl>
+
+        <Controller
+          name="pullRequestId"
+          control={control}
+          render={({ field: { onChange } }) => (
+            <TextField
+              type="number"
+              required
+              error={isPRIdError}
+              id="outlined-required"
+              label="PR number, e.g. 2021"
+              helperText={isUrlError ? 'Please submit only PR number' : 'Input PR number here'}
+              value={pullRequestId}
+              onChange={event => {
+                const temp = event.target.value;
+                onChange(temp);
+                setPullRequestId(temp);
+              }}
+            />
+          )}
+        />
 
         <Controller
           name="domains"

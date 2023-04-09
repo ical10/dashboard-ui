@@ -7,6 +7,7 @@ const nextConfig = {
     appSecret: process.env.APP_SECRET,
   },
   publicRuntimeConfig: {
+    apiURL: process.env.NEXT_PUBLIC_API_URL,
     authMessage: process.env.NEXT_PUBLIC_SECRET_DATA,
     authURL: process.env.NEXTAUTH_URL,
   },

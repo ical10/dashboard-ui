@@ -118,3 +118,7 @@ li {
 .icon-svg {
   stroke: white;
 }
+
+a {
+  text-decoration: none;
+}

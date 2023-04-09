@@ -1,14 +1,7 @@
-import {
-  FirstPage as FirstPageIcon,
-  KeyboardArrowLeft,
-  KeyboardArrowRight,
-  LastPage as LastPageIcon,
-  ChatBubble as ChatBubbleIcon,
-} from '@mui/icons-material';
+import { ChatBubble as ChatBubbleIcon } from '@mui/icons-material';
 import {
   Typography,
   Skeleton,
-  Box,
   IconButton,
   Paper,
   Table,
@@ -20,7 +13,6 @@ import {
   TablePagination,
   TableRow,
 } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
 
 import { useEffect, useState } from 'react';
 
@@ -28,77 +20,13 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 
 import CommentDialog from './CommentDialog';
+import TablePaginationActions from './TablePaginationActions';
 
 import axios from 'axios';
 import clsx from 'clsx';
-import PropTypes from 'prop-types';
 import { ROLE_ID } from 'src/types/db';
 import { CommentDataProps, SubmissionDataProps } from 'src/types/submission';
 import useSWR from 'swr';
-
-interface TablePaginationActionsProps {
-  count: number;
-  page: number;
-  rowsPerPage?: number;
-  onPageChange: (event: React.MouseEvent<HTMLButtonElement>, newPage: number) => void;
-}
-
-function TablePaginationActions(props: TablePaginationActionsProps) {
-  const theme = useTheme();
-  const { count, page, rowsPerPage = 10, onPageChange } = props;
-
-  const handleFirstPageButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    onPageChange(event, 0);
-  };
-
-  const handleBackButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    onPageChange(event, page - 1);
-  };
-
-  const handleNextButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    onPageChange(event, page + 1);
-  };
-
-  const handleLastPageButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    onPageChange(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
-  };
-
-  return (
-    <Box sx={{ flexShrink: 0, ml: 2.5 }}>
-      <IconButton
-        onClick={handleFirstPageButtonClick}
-        disabled={page === 0}
-        aria-label="first page"
-      >
-        {theme.direction === 'rtl' ? <LastPageIcon /> : <FirstPageIcon />}
-      </IconButton>
-      <IconButton onClick={handleBackButtonClick} disabled={page === 0} aria-label="previous page">
-        {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
-      </IconButton>
-      <IconButton
-        onClick={handleNextButtonClick}
-        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
-        aria-label="next page"
-      >
-        {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
-      </IconButton>
-      <IconButton
-        onClick={handleLastPageButtonClick}
-        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
-        aria-label="last page"
-      >
-        {theme.direction === 'rtl' ? <FirstPageIcon /> : <LastPageIcon />}
-      </IconButton>
-    </Box>
-  );
-}
-
-TablePaginationActions.propTypes = {
-  count: PropTypes.number.isRequired,
-  onPageChange: PropTypes.func.isRequired,
-  page: PropTypes.number.isRequired,
-  rowsPerPage: PropTypes.number.isRequired,
-};
 
 const twStyles = {
   groupBlurOnHover: 'group-hover:blur-[1px]',
@@ -126,10 +54,9 @@ const OverviewTable = () => {
   };
 
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const [submissions, setSubmissions] = useState<SubmissionDataProps[] | null>(null);
-  const [loadingSubmissions, setLoadingSubmissions] = useState(false);
 
   const [openCommentDialog, setOpenCommentDialog] = useState(false);
   const [comments, setComments] = useState<CommentDataProps[]>([]);
@@ -138,13 +65,11 @@ const OverviewTable = () => {
   const { data, isLoading } = useSWR(`${URL}/find`, fetcher);
 
   useEffect(() => {
-    setLoadingSubmissions(true);
     if (data) {
       const { data: responseData } = data;
       if (responseData && responseData.length > 0) {
         setSubmissions(responseData);
       }
-      setLoadingSubmissions(false);
     }
   }, [data]);
 
@@ -175,6 +100,7 @@ const OverviewTable = () => {
 
   const isValidHttpUrl = (urlString: string) => {
     try {
+      //@ts-ignore
       const url = new URL(urlString);
       return url;
     } catch (_) {
@@ -185,6 +111,7 @@ const OverviewTable = () => {
 
   const extractDomainName = (urlString: string) => {
     try {
+      //@ts-ignore
       const url = new URL(urlString);
       const { hostname } = url;
       return hostname;
@@ -195,8 +122,7 @@ const OverviewTable = () => {
 
   const isUser = Boolean(session?.user.user_roles);
 
-  if (loadingSubmissions || isLoading)
-    return <Skeleton variant="rounded" width={900} height={400} />;
+  if (isLoading) return <Skeleton variant="rounded" width={900} height={400} />;
 
   return (
     <>
