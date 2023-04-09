@@ -1,5 +1,6 @@
 import LoadingButton from '@mui/lab/LoadingButton';
 import {
+  Skeleton,
   Box,
   Button,
   FormControl,
@@ -18,7 +19,9 @@ import React, { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 
+import axios from 'axios';
 import { UrlDataProps } from 'src/types/submission';
+import useSWR from 'swr';
 
 export type OpenSnackbarProps = {
   message: string;
@@ -30,25 +33,38 @@ type EditFormProps = {
   editedUrlData?: UrlDataProps;
 };
 
+const URL = 'https://antiscam-api.paranodes.io';
+const fetcher = (url: string) => axios.get(url).then(res => res.data);
+
 //TODO: should create a different form for editing submissions, add ?Edit params
-export const EditForm = ({ onOpenSnackbar, editedUrlData }: EditFormProps) => {
+export const EditForm = ({ onOpenSnackbar }: EditFormProps) => {
   const { data: session } = useSession();
   const router = useRouter();
+
+  const id = router.query['submission_id'];
+
+  const { data: editedUrlData, isLoading } = useSWR(`${URL}/find/${id}`, fetcher);
 
   const [implementer, setImplementer] = useState<string | null>(null);
   const [domain, setDomain] = useState<string | null>(null);
   const [screenshotUrl, setScreenshotUrl] = useState<string | null>(null);
   const [isTakenDown, setTakenDown] = useState(false);
+  const [pullRequestId, setPullRequestId] = useState<string | null>(null);
 
   const [sendingSubmission, setSendingSubmission] = useState(false);
 
+  console.log({ editedUrlData });
+
   useEffect(() => {
     if (editedUrlData) {
-      setDomain(editedUrlData.domainname);
-      if (!editedUrlData.proof) {
+      const { url_data } = editedUrlData.data;
+      if (!url_data.proof || !url_data.pull_request_id) {
         return;
       }
-      setScreenshotUrl(editedUrlData.proof);
+      const { domainname, pull_request_id, proof } = url_data;
+      setDomain(domainname);
+      setPullRequestId(pull_request_id);
+      setScreenshotUrl(proof);
     }
   }, [editedUrlData]);
 
@@ -63,6 +79,7 @@ export const EditForm = ({ onOpenSnackbar, editedUrlData }: EditFormProps) => {
         const { sig, address } = session.user;
 
         const payload = {
+          pull_request_id: Number(pullRequestId) ?? '',
           domainname: domain,
           takendown: isTakenDown,
           proof: screenshotUrl,
@@ -72,8 +89,6 @@ export const EditForm = ({ onOpenSnackbar, editedUrlData }: EditFormProps) => {
           payload,
           address: address,
         };
-
-        const id = router.query['submission_id'];
 
         const resp = await fetch(`/api/implementers/edit/${id}`, {
           method: 'POST',
@@ -108,11 +123,15 @@ export const EditForm = ({ onOpenSnackbar, editedUrlData }: EditFormProps) => {
 
   if (!domain || !screenshotUrl) return null;
 
+  const isPRIdError = Boolean(pullRequestId !== null && pullRequestId.length === 0);
+
   const isDomainError = typeof domain !== 'string';
   const isUrlError = typeof screenshotUrl !== 'string';
 
   const isImplementerError = !implementer;
   const isFormInvalid = isDomainError || isUrlError || isImplementerError;
+
+  if (isLoading) return <Skeleton variant="rounded" width={900} height={400} />;
 
   return (
     <Box
@@ -146,6 +165,20 @@ export const EditForm = ({ onOpenSnackbar, editedUrlData }: EditFormProps) => {
             {isImplementerError ? 'Please select the implementer!' : ''}
           </FormHelperText>
         </FormControl>
+
+        <TextField
+          required
+          type="number"
+          error={isPRIdError}
+          id="outlined-required"
+          label="PR number, e.g. 2021"
+          helperText={isUrlError ? 'Please submit only PR number' : 'Input PR number here'}
+          value={pullRequestId}
+          onChange={event => {
+            const temp = event.target.value;
+            setPullRequestId(temp);
+          }}
+        />
 
         <TextField
           required

@@ -29,10 +29,12 @@ import { useRouter } from 'next/router';
 
 import CommentDialog from './CommentDialog';
 
+import axios from 'axios';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import { ROLE_ID } from 'src/types/db';
 import { CommentDataProps, SubmissionDataProps } from 'src/types/submission';
+import useSWR from 'swr';
 
 interface TablePaginationActionsProps {
   count: number;
@@ -102,6 +104,9 @@ const twStyles = {
   groupBlurOnHover: 'group-hover:blur-[1px]',
 };
 
+const URL = 'https://antiscam-api.paranodes.io';
+const fetcher = (url: string) => axios.get(url).then(res => res.data);
+
 const OverviewTable = () => {
   const { data: session } = useSession();
 
@@ -130,31 +135,18 @@ const OverviewTable = () => {
   const [comments, setComments] = useState<CommentDataProps[]>([]);
   const [referencedUrl, setReferencedUrl] = useState('');
 
+  const { data, isLoading } = useSWR(`${URL}/find`, fetcher);
+
   useEffect(() => {
-    const getAllSubmissions = async () => {
-      setLoadingSubmissions(true);
-
-      try {
-        const resp = await fetch('/api', {
-          method: 'GET',
-        });
-
-        const { data } = await resp.json();
-
-        const { data: responseData } = data;
-        if (responseData.length) {
-          setSubmissions(responseData);
-          return;
-        }
-      } catch (error) {
-        console.warn({ error });
-      } finally {
-        setLoadingSubmissions(false);
+    setLoadingSubmissions(true);
+    if (data) {
+      const { data: responseData } = data;
+      if (responseData && responseData.length > 0) {
+        setSubmissions(responseData);
       }
-    };
-
-    getAllSubmissions();
-  }, []);
+      setLoadingSubmissions(false);
+    }
+  }, [data]);
 
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
@@ -203,7 +195,8 @@ const OverviewTable = () => {
 
   const isUser = Boolean(session?.user.user_roles);
 
-  if (loadingSubmissions) return <Skeleton variant="rounded" width={900} height={400} />;
+  if (loadingSubmissions || isLoading)
+    return <Skeleton variant="rounded" width={900} height={400} />;
 
   return (
     <>
