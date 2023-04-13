@@ -19,14 +19,11 @@ import React, { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 
+import { OpenSnackbarProps } from './types';
+
 import axios from 'axios';
 import { UrlDataProps } from 'src/types/submission';
 import useSWR from 'swr';
-
-export type OpenSnackbarProps = {
-  message: string;
-  type?: string;
-};
 
 type EditFormProps = {
   onOpenSnackbar?: (props: OpenSnackbarProps) => void;

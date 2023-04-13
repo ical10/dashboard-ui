@@ -18,6 +18,8 @@ import { useForm, Controller, SubmitHandler } from 'react-hook-form';
 
 import { useSession } from 'next-auth/react';
 
+import { OpenSnackbarProps } from './types';
+
 import { UrlDataProps } from 'src/types/submission';
 
 type FormData = {
@@ -34,11 +36,6 @@ type SubmissionAPIPayload = {
   domainname: string;
   isTakendown: boolean;
   screenshot: string;
-};
-
-export type OpenSnackbarProps = {
-  message: string;
-  type?: string;
 };
 
 type ReportFormProps = {

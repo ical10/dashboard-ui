@@ -139,11 +139,6 @@ function PureSidebar({ isAuthenticated, onConnect }: PureSidebarProps) {
                   title={menuOptions[0].title}
                   icon={menuOptions[0].icon}
                 />
-                <MenuOption
-                  href={menuOptions[2].href}
-                  title={menuOptions[2].title}
-                  icon={menuOptions[2].icon}
-                />
               </>
             )}
           </List>

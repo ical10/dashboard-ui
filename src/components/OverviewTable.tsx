@@ -40,10 +40,10 @@ const OverviewTable = () => {
 
   const router = useRouter();
 
-  const handleEditSubmission = (id: number) => {
+  const handleGoToForm = (baseUrl: string, id: number) => {
     router.push(
       {
-        pathname: `/implementers/edit/`,
+        pathname: baseUrl,
         query: {
           submission_id: id,
         },
@@ -264,9 +264,28 @@ const OverviewTable = () => {
                           id="link-action"
                           className="hidden group-hover:inline-block group-hover:blur-0 group-hover:border-b-0"
                         >
-                          <button onClick={() => handleEditSubmission(url_data.id)}>Edit</button>
+                          <button
+                            onClick={() => handleGoToForm('/implementers/edit/', url_data.id)}
+                          >
+                            Edit
+                          </button>
                         </TableCell>
                       )}
+
+                    {session?.user.user_roles.some(
+                      e =>
+                        e.role_id === ROLE_ID.Child_Curator ||
+                        e.role_id === ROLE_ID.General_Curator,
+                    ) && (
+                      <TableCell
+                        id="link-action"
+                        className="hidden group-hover:inline-block group-hover:blur-0 group-hover:border-b-0"
+                      >
+                        <button onClick={() => handleGoToForm('/curators/edit/', url_data.id)}>
+                          Curate
+                        </button>
+                      </TableCell>
+                    )}
                     {!session?.user && <></>}
                   </TableRow>
                 ))

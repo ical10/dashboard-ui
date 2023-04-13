@@ -4,9 +4,10 @@ import { useState, useCallback } from 'react';
 
 import { useSession } from 'next-auth/react';
 
-import { EditForm, OpenSnackbarProps } from 'src/components/EditForm';
+import { EditForm } from 'src/components/EditForm';
 import Sidebar from 'src/components/Sidebar';
 import WalletModal from 'src/components/connect/WalletModal';
+import { OpenSnackbarProps } from 'src/components/types';
 
 const EditSubmissionPage = () => {
   const { data: session, status } = useSession();
@@ -47,11 +48,6 @@ const EditSubmissionPage = () => {
             </div>
             <EditForm onOpenSnackbar={handleOpenSnackbar} />
           </div>
-          {
-            // <div className="flex justify-center mt-6 mx-6">
-            //   <Statistics />
-            // </div>
-          }
         </div>
 
         <Snackbar

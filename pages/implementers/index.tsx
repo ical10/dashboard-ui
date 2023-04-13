@@ -4,9 +4,10 @@ import { useState, useCallback } from 'react';
 
 import { useSession } from 'next-auth/react';
 
-import { ReportForm, OpenSnackbarProps } from 'src/components/ReportForm';
+import { ReportForm } from 'src/components/ReportForm';
 import Sidebar from 'src/components/Sidebar';
 import WalletModal from 'src/components/connect/WalletModal';
+import { OpenSnackbarProps } from 'src/components/types';
 
 const ImplementersDetail = () => {
   const { data: session, status } = useSession();
