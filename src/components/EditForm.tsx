@@ -1,6 +1,5 @@
 import LoadingButton from '@mui/lab/LoadingButton';
 import {
-  Skeleton,
   Box,
   Button,
   FormControl,
@@ -19,6 +18,7 @@ import React, { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 
+import CustomSkeleton from './CustomSkeleton';
 import { OpenSnackbarProps } from './types';
 
 import axios from 'axios';
@@ -126,7 +126,7 @@ export const EditForm = ({ onOpenSnackbar }: EditFormProps) => {
   const isImplementerError = !implementer;
   const isFormInvalid = isDomainError || isUrlError || isImplementerError;
 
-  if (isLoading) return <Skeleton variant="rounded" width={900} height={400} />;
+  if (isLoading) return <CustomSkeleton />;
 
   return (
     <Box

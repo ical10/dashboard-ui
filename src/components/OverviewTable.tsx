@@ -1,7 +1,6 @@
 import { ChatBubble as ChatBubbleIcon } from '@mui/icons-material';
 import {
   Typography,
-  Skeleton,
   IconButton,
   Paper,
   Table,
@@ -20,6 +19,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 
 import CommentDialog from './CommentDialog';
+import CustomSkeleton from './CustomSkeleton';
 import TablePaginationActions from './TablePaginationActions';
 
 import axios from 'axios';
@@ -122,7 +122,7 @@ const OverviewTable = () => {
 
   const isUser = Boolean(session?.user.user_roles);
 
-  if (isLoading) return <Skeleton variant="rounded" width={900} height={400} />;
+  if (isLoading) return <CustomSkeleton />;
 
   return (
     <>

@@ -1,6 +1,5 @@
 import LoadingButton from '@mui/lab/LoadingButton';
 import {
-  Skeleton,
   Box,
   Button,
   FormControl,
@@ -14,6 +13,7 @@ import React, { useState } from 'react';
 
 import { useSession } from 'next-auth/react';
 
+import CustomSkeleton from './CustomSkeleton';
 import { OpenSnackbarProps } from './types';
 
 import { InputFormProps } from 'pages/curators/edit';
@@ -90,7 +90,7 @@ export const CurateForm = ({ onOpenSnackbar, curateFormData, isLoading }: Curate
     }
   };
 
-  if (isLoading) return <Skeleton variant="rounded" width={900} height={400} />;
+  if (isLoading) return <CustomSkeleton />;
 
   return (
     <Box
