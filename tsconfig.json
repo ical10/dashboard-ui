@@ -16,6 +16,9 @@
     "incremental": true,
     "baseUrl": ".",
     "paths": {
+      "@/pages/*": ["src/pages/*"],
+      "@/types/*": ["src/types/*"],
+      "@/components/*": ["src/components/*"],
       "@/icons/*": ["public/icons/*"]
     }
   },
