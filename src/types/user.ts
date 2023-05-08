@@ -6,3 +6,10 @@ export type UserDataProps = {
   status_id: number;
   updatedAt: string;
 };
+
+export type UserRoleProps = {
+  createdAt: string;
+  id: number;
+  title: string;
+  updatedAt: string;
+};

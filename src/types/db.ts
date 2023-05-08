@@ -9,7 +9,7 @@ export const ROLE_ID = {
 
 export type ROLE_ID = typeof ROLE_ID[keyof typeof ROLE_ID];
 
-interface UserRole {
+export interface UserRole {
   id: number;
   user_id: number;
   role_id: ROLE_ID;
