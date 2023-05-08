@@ -18,6 +18,7 @@
     "paths": {
       "@/pages/*": ["src/pages/*"],
       "@/types/*": ["src/types/*"],
+      "@/store/*": ["src/store/*"],
       "@/components/*": ["src/components/*"],
       "@/icons/*": ["public/icons/*"]
     }

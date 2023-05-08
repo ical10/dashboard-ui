@@ -4,7 +4,7 @@ import ImplementersIcon from '@/icons/ImplementersIcon.svg';
 import LogoutIcon from '@/icons/LogoutIcon.svg';
 // import AggregatesIcon from '@/icons/AggregatesIcon.svg';
 // import GoalsIcon from '@/icons/GoalsIcon.svg';
-// import RewardsIcon from '@/icons/RewardsIcon.svg';
+import RewardsIcon from '@/icons/RewardsIcon.svg';
 import {
   Box,
   List,
@@ -76,6 +76,11 @@ function PureSidebar({ isAuthenticated, onConnect }: PureSidebarProps) {
       title: 'Curators',
       href: '/curators',
     },
+    {
+      icon: RewardsIcon,
+      title: 'Rewards',
+      href: '/rewards',
+    },
   ];
 
   // TODO: extract this as a utils and use it in OverviewTable to change action in link-action
@@ -116,6 +121,11 @@ function PureSidebar({ isAuthenticated, onConnect }: PureSidebarProps) {
                   title={menuOptions[0].title}
                   icon={menuOptions[0].icon}
                 />
+                <MenuOption
+                  href={menuOptions[3].href}
+                  title={menuOptions[3].title}
+                  icon={menuOptions[3].icon}
+                />
               </>
             )}
             {isImplementerSession && (
@@ -138,6 +148,11 @@ function PureSidebar({ isAuthenticated, onConnect }: PureSidebarProps) {
                   href={menuOptions[0].href}
                   title={menuOptions[0].title}
                   icon={menuOptions[0].icon}
+                />
+                <MenuOption
+                  href={menuOptions[3].href}
+                  title={menuOptions[3].title}
+                  icon={menuOptions[3].icon}
                 />
               </>
             )}

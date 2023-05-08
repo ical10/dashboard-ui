@@ -1,3 +1,4 @@
+import { useAccountStore } from '@/store/index';
 import { u8aToHex } from '@polkadot/util';
 import { encodeAddress, decodeAddress } from '@polkadot/util-crypto';
 import { WalletAccount } from '@talismn/connect-wallets';
@@ -12,6 +13,9 @@ const { publicRuntimeConfig } = getConfig();
 const useConnect = () => {
   const { signWithWallet } = useAuth();
 
+  const setAccount = useAccountStore(state => state.setAccount);
+  const setSignedMessage = useAccountStore(state => state.setSignedMessage);
+
   const verifyAccount = async (selectedAccount: WalletAccount) => {
     const message = publicRuntimeConfig.authMessage;
     const signature = await signWithWallet(selectedAccount, message);
@@ -25,11 +29,16 @@ const useConnect = () => {
       return null;
     }
 
-    signIn('credential', {
+    const signInResponse = await signIn('credential', {
       publicAddress: polkadotAddress,
       signature,
       callbackUrl: `${publicRuntimeConfig.authURL}`,
     });
+
+    if (signInResponse?.ok) {
+      setAccount(selectedAccount);
+      setSignedMessage(signature);
+    }
   };
 
   return {

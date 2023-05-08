@@ -28,9 +28,7 @@ const RewardsDetail = () => {
               <h1>Rewards Detail Page</h1>
               <h3 className="mt-12">Check implementer&apos;s rewards here</h3>
             </div>
-            {session && (
-              <RewardDetails address={session.user.address} signature={session.user.sig} />
-            )}
+            <RewardDetails />
           </div>
         </div>
       </div>
