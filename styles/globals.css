@@ -7,6 +7,7 @@
 @layer {
   :root {
     --talisman-connect-active-background: hsla(350, 83%, 69%, 0.4);
+    --talisman-connect-modal-max-height: 470px;
   }
 }
 
