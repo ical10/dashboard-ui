@@ -13,7 +13,7 @@ import {
   TextField,
 } from '@mui/material';
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
@@ -51,14 +51,15 @@ export const EditForm = ({ onOpenSnackbar }: EditFormProps) => {
   const [sendingSubmission, setSendingSubmission] = useState(false);
 
   useEffect(() => {
-    if (editedUrlData) {
+    if (editedUrlData && editedUrlData.status) {
       const { url_data } = editedUrlData.data;
       if (!url_data.proof || !url_data.pull_request_id) {
         return;
       }
-      const { domainname, pull_request_id, proof } = url_data;
+      const { domainname, pull_request_id, proof, takendown } = url_data;
       setDomain(domainname);
       setPullRequestId(pull_request_id);
+      setTakenDown(takendown);
       setScreenshotUrl(proof);
     }
   }, [editedUrlData]);
@@ -219,8 +220,9 @@ export const EditForm = ({ onOpenSnackbar }: EditFormProps) => {
             control={
               <Switch
                 required
+                checked={isTakenDown}
                 color="primary"
-                value={domain}
+                value={isTakenDown}
                 onChange={event => {
                   const { checked } = event.target;
                   setTakenDown(checked);

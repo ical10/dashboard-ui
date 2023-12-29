@@ -22,8 +22,8 @@ export type UrlDataProps = {
   pull_request_id: null | number;
   status_id: number;
   submitted_by: number;
-  confirmed_takendown: null | boolean;
   takendown: null | boolean;
+  confirmed_takendown: null | boolean;
   updatedAt: string;
   usid: string;
 };
