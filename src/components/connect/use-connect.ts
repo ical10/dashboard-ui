@@ -1,10 +1,11 @@
 import { useAccountStore } from '@/store/index';
 import { u8aToHex } from '@polkadot/util';
-import { encodeAddress, decodeAddress } from '@polkadot/util-crypto';
+import { decodeAddress, encodeAddress } from '@polkadot/util-crypto';
 import { WalletAccount } from '@talismn/connect-wallets';
 
 import { signIn } from 'next-auth/react';
 import getConfig from 'next/config';
+import toast from 'react-hot-toast';
 
 import useAuth from 'src/hooks/use-auth';
 
@@ -30,6 +31,7 @@ const useConnect = () => {
     }
 
     const signInResponse = await signIn('credential', {
+      redirect: false,
       publicAddress: polkadotAddress,
       signature,
       callbackUrl: `${publicRuntimeConfig.authURL}`,
@@ -38,6 +40,13 @@ const useConnect = () => {
     if (signInResponse?.ok) {
       setAccount(selectedAccount);
       setSignedMessage(signature);
+      toast.success(`Successfully connected! Welcome ${selectedAccount.name}!`);
+    }
+
+    if (signInResponse?.error) {
+      toast.error(
+        'You have no roles. Please refresh page and connect with another account or contact the admin.',
+      );
     }
   };
 

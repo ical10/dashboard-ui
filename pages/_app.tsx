@@ -1,6 +1,7 @@
 import createCache from '@emotion/cache';
 import { CacheProvider } from '@emotion/react';
 import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
+import { Toaster } from 'react-hot-toast';
 
 import { SessionProvider } from 'next-auth/react';
 import type { AppProps } from 'next/app';
@@ -21,6 +22,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
         <ThemeProvider theme={muiTheme}>
           <SessionProvider session={session}>
             <Component {...pageProps} />
+            <Toaster />
           </SessionProvider>
         </ThemeProvider>
       </CacheProvider>
