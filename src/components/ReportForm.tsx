@@ -13,8 +13,8 @@ import {
   TextField,
 } from '@mui/material';
 
-import React, { useState, useEffect } from 'react';
-import { useForm, Controller, SubmitHandler } from 'react-hook-form';
+import { useEffect, useState } from 'react';
+import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 
 import { useSession } from 'next-auth/react';
 
@@ -35,7 +35,7 @@ type SubmissionAPIPayload = {
   pull_request_id: number;
   domainname: string;
   isTakendown: boolean;
-  screenshot: string;
+  proof: string;
 };
 
 type ReportFormProps = {
@@ -66,7 +66,7 @@ export const ReportForm = ({ onOpenSnackbar, editedUrlData }: ReportFormProps) =
           pull_request_id: Number(pullRequestId) ?? '',
           domainname: x ?? '',
           isTakendown: isTakenDowns[i] ?? false,
-          screenshot: !screenshotUrls ? urls[0] : screenshotUrls[i] ?? '',
+          proof: !screenshotUrls ? urls[0] : screenshotUrls[i] ?? '',
         };
       });
 
@@ -133,17 +133,20 @@ export const ReportForm = ({ onOpenSnackbar, editedUrlData }: ReportFormProps) =
 
         const { data } = await resp.json();
         const { status, message } = data;
+
+        if (status === 0) {
+          onOpenSnackbar &&
+            onOpenSnackbar({
+              message,
+              type: 'error',
+            });
+        }
+
         if (status === 1) {
           onOpenSnackbar &&
             onOpenSnackbar({
               message,
               type: 'success',
-            });
-        } else {
-          onOpenSnackbar &&
-            onOpenSnackbar({
-              message,
-              type: 'error',
             });
         }
       }

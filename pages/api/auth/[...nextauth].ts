@@ -26,28 +26,31 @@ export default NextAuth({
 
         const { signature, publicAddress } = credentials;
         try {
-          const { status, data } = await AuthAPI.login({
+          const resp = await AuthAPI.login({
             signedMessage: signature,
             userAddress: publicAddress,
           });
 
-          const { id, identifier, user_roles } = data;
+          if (!resp) return null;
 
-          const user: AuthenticatedUser = {
-            id,
-            address: publicAddress,
-            sig: signature,
-            identifier,
-            user_roles,
-          };
+          if (resp.data) {
+            const { id, identifier, user_roles } = resp.data;
 
-          if (status) {
+            const user: AuthenticatedUser = {
+              id,
+              address: publicAddress,
+              sig: signature,
+              identifier,
+              user_roles,
+            };
+
             return user;
-          } else {
-            throw new Error('Auth failed!');
           }
         } catch (error) {
-          console.log({ error });
+          return {
+            error: (error as Error).message,
+            status: false,
+          };
         }
       },
     }),

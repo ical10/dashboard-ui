@@ -21,6 +21,7 @@ import { signOut, useSession } from 'next-auth/react';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 
+import toast from 'react-hot-toast';
 import { ROLE_ID } from 'src/types/db';
 
 type PureSidebarProps = {
@@ -114,47 +115,31 @@ function PureSidebar({ isAuthenticated, onConnect }: PureSidebarProps) {
       <div>
         <nav id="main-sidebar" aria-label="main-sidebar">
           <List>
+            <MenuOption
+              href={menuOptions[0].href}
+              title={menuOptions[0].title}
+              icon={menuOptions[0].icon}
+            />
             {isPublicSession && (
-              <>
-                <MenuOption
-                  href={menuOptions[0].href}
-                  title={menuOptions[0].title}
-                  icon={menuOptions[0].icon}
-                />
-                <MenuOption
-                  href={menuOptions[3].href}
-                  title={menuOptions[3].title}
-                  icon={menuOptions[3].icon}
-                />
-              </>
+              <MenuOption
+                href={menuOptions[3].href}
+                title={menuOptions[3].title}
+                icon={menuOptions[3].icon}
+              />
             )}
             {isImplementerSession && (
-              <>
-                <MenuOption
-                  href={menuOptions[0].href}
-                  title={menuOptions[0].title}
-                  icon={menuOptions[0].icon}
-                />
-                <MenuOption
-                  href={menuOptions[1].href}
-                  title={menuOptions[1].title}
-                  icon={menuOptions[1].icon}
-                />
-              </>
+              <MenuOption
+                href={menuOptions[1].href}
+                title={menuOptions[1].title}
+                icon={menuOptions[1].icon}
+              />
             )}
             {isCuratorSession && (
-              <>
-                <MenuOption
-                  href={menuOptions[0].href}
-                  title={menuOptions[0].title}
-                  icon={menuOptions[0].icon}
-                />
-                <MenuOption
-                  href={menuOptions[3].href}
-                  title={menuOptions[3].title}
-                  icon={menuOptions[3].icon}
-                />
-              </>
+              <MenuOption
+                href={menuOptions[3].href}
+                title={menuOptions[3].title}
+                icon={menuOptions[3].icon}
+              />
             )}
           </List>
         </nav>
@@ -167,7 +152,10 @@ function PureSidebar({ isAuthenticated, onConnect }: PureSidebarProps) {
                 <>
                   <ListItemButton
                     onClick={() => {
-                      signOut();
+                      signOut({
+                        redirect: false,
+                      });
+                      toast.success('Logout successful');
                     }}
                   >
                     <ListItemIcon>

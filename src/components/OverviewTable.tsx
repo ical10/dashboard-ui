@@ -1,6 +1,5 @@
 import { ChatBubble as ChatBubbleIcon } from '@mui/icons-material';
 import {
-  Typography,
   IconButton,
   Paper,
   Table,
@@ -11,6 +10,7 @@ import {
   TableHead,
   TablePagination,
   TableRow,
+  Typography,
 } from '@mui/material';
 
 import { useEffect, useState } from 'react';
